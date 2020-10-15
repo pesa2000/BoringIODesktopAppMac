@@ -1,17 +1,24 @@
 //@ts-ignore
+//      "entitlements": "builds/entitlements.mac.plist",
+//      "entitlementsInherit": "builds/entitlements.mac.plist"
 const fetch = require("node-fetch")
 const request = require("request")
 var moment = require('moment')
-const {BrowserWindow,ipcMain,app}=require('electron')
+const ipcMain = require('electron').ipcMain
+const BrowserWindow = require("electron").BrowserWindow
+const app = require('electron').app
+console.log(app)
 const os = require("os-utils");
 const path=require('path')
+var AppDataDir = app.getPath("userData")
+console.log(AppDataDir)
 const url=require('url')
 let $ = require('jquery')
-const { start } = require('repl')
 var mysql = require('mysql')
 const bcrypt = require('bcrypt')
 const fs = require('fs')
-var AccountSavedDirectory = path.join(app.getPath("userData"),"AccountSaved.txt")
+const got = require('got')
+var AccountSavedDirectory = path.join(AppDataDir,"AccountSaved.txt")
 console.log(AccountSavedDirectory)
 //const VersionSavedDirectory = path.join(app.getPath("userData"),"/ProgramVersion.txt")
 const InventoryPath = path.join(__dirname,"../scripts/inventory.js")
@@ -21,19 +28,26 @@ var BOUGHT = false
 var DirectoryLog = app.getPath("userData")
 console.log("Directory Appdata")
 console.log(DirectoryLog)
+console.log("Program Version")
+console.log(app.getVersion())
+const {autoUpdater} = require("electron-updater")
+
+const isPackaged = require('electron-is-packaged').isPackaged
+
+var internetAvailable = require("internet-available");
+
+var DEBUGGER_MODE
+
+const Logger = require("electron-log")
+autoUpdater.logger = Logger
+autoUpdater.logger.transports.file.level = "debug"
 
 var GlobalIdUtente = 0
 
-const got = require('got');
-
-/*(async () => {
-    try {
-        const response = await got('https://www.outpump.com/releases/');
-        console.log(response.body);
-    } catch (error) {
-        console.log(error.response.body);
-    }
-})();*/
+app.on('ready', () => {
+  console.log("App ready")
+  CheckLogFile()
+})
 
 if(fs.existsSync(AccountSavedDirectory)){
   console.log("La cartella esiste")
@@ -48,7 +62,6 @@ if(fs.existsSync(path.join(DirectoryLog,"/InventoryExported"))){
   fs.mkdirSync(path.join(DirectoryLog,"/InventoryExported"))
 }
 
-CheckLogFile()
 function CheckLogFile(){
   if(fs.existsSync(path.join(DirectoryLog,"/LogMessage.json"))){
     console.log("Il file esiste")
@@ -59,10 +72,18 @@ function CheckLogFile(){
       console.log("File Creato")
     })
   }
+  //createWindows()
+  if(isPackaged == true){
+    console.log("Is Packaged")
+    DEBUGGER_MODE = false
+    autoUpdater.checkForUpdatesAndNotify()
+  }else{
+    console.log("Is not Packaged")
+    DEBUGGER_MODE = true
+    createWindows()
+  }
 }
-var internetAvailable = require("internet-available");
 
-var DEBUGGER_MODE = true
 var SubscriptionId = ""
 var CustomerIdDB = ""
 var SubscriptionChanged = ""
@@ -98,134 +119,7 @@ function GetTodaysDateDashFormat1(){
 //userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
 const stockX = new StockxAPI();
 
-//var LatestVersion = ""
-
-/*var UpdatesLink = {
-  "../scripts/inventory.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Inventory.js",
-  "../inventory.html": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Inventory.html",
-
-  "../scripts/bot.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Bot.js",
-  "../bot.html": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Bot.html",
-
-  "../scripts/sales.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Sales.js",
-  "../sales.html": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Sales.html",
-
-  "../scripts/settings.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Settings.js",
-  "../settings.html": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Settings.html",
-
-  "../scripts/stats.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Stats.js",
-  "../stats.html": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Stats.html",
-
-  "../scripts/log.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Log.js",
-  "../log.html": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Log.html",
-
-  "../scripts/tracking.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Tracking.js",
-  "../tracking.html": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Tracking.html",
-
-  "../scripts/market.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Market.js",
-  "../market.html": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Market.html",
-
-  "../scripts/home.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Home.js",
-  "../home.html": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Home.html",
-
-  "../scripts/expenses.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Expenses.js",
-  "../expenses.html": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Expenses.html",
-
-  "../scripts/settings.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Settings.js",
-  "../settings.html": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Settings.html",
-
-  "../scripts/home.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Home.js",
-  "../home.html": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Home.html",
-
-  "../dist/js/pages/morris/morris-data.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=morris-data.js",
-  "../dist/js/pages/dashboards/dashboards1.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=dashboard1.js",
-
-  "../utilityScripts/query_graphs_expenses": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=query_graphs_expenses.js",
-  "../utilityScripts/currency-conversion.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=currency-conversion.js",
-  "../utilityScripts/query_stats_expenses.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=query_stats_expenses.js",
-  "../utilityScripts/query_stats_home.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=query_stats_home.js",
-  "../utilityScripts/query_stats_inventory.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=query_stats_inventory.js",
-  "../utilityScripts/query_stats_sales.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=query_stats_sales.js",
-
-  "/main.js": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Main.js",
-  "/login.html": "https://www.boringio.com:5000/GetUpdate/LatestRelease/File=Login.html"
-}
-/*function CheckUpdates(){
-  (async () => {
-    try {
-        const response = await got('https://www.boringio.com:5000/GetUpdate/CurrentVersion');
-        console.log("SERVER VERSION")
-        console.log(response.body);
-        var Split1 = response.body.split(".")
-        LatestVersion = Split1[0] +""+ Split1[1] + "" + Split1[2]
-        fs.readFile(VersionSavedDirectory,"utf8",async function(err,data){
-          if(err) console.log(err)
-          console.log("CLIENT VERSION")
-          console.log(data)
-          var Split = data.split(".")
-          var VersionClient = Split[0] + "" + Split[1] + "" + Split[2]
-          console.log(VersionClient.toString())
-          console.log(LatestVersion.toString())
-          if(LatestVersion.toString() == VersionClient.toString()){
-            createWindows()
-          }else{
-            console.log("Aggiornamento disponibile")
-            await DownloadUpdate()
-          }
-        })
-    } catch (error) {
-        console.log(error.response.body);
-    }
-  })();
-}*/
-
-/*async function DownloadUpdate(){
-  console.log("Update Mapp")
-  Object.keys(UpdatesLink).forEach(async function(key){
-    console.log(key, UpdatesLink[key])
-    var Path = key
-    var Link = UpdatesLink[key]
-    try {
-      await SingleUpdate(Path,Link,key)
-      console.log("Updated " + Path)
-    }
-    catch(error){
-      console.log(error)
-    }
-  })
-  await sleep(3000)
-  UpdateVersion()
-}*/
-
-/*async function SingleUpdate(Path,Link,key){
-  return new Promise(async (resolve,reject) =>{
-    var response = ""
-    try{
-      response = await got(Link)
-      var PathToApplyChanges = path.join(__dirname,Path)
-      console.log(response)
-      fs.writeFile(PathToApplyChanges,response.body,function(err){
-        if(err) console.log(err)
-        console.log(response.body)
-        resolve("Updated file" + key)
-      })
-    }catch(err){
-      console.log(err)
-    }
-  })
-}*/
-
-/*async function UpdateVersion(){
-  var latestVersion = LatestVersion[0] + "." + LatestVersion[1] + "." + LatestVersion[2]
-  fs.writeFile(VersionSavedDirectory,latestVersion,function(err,data){
-    if(err)console.log(err)
-  })
-  app.relaunch()
-  app.exit()
-}*/
-
-app.isReady(createWindows())
-
+//app.on("ready",CheckLogFile())
 
 var connection
 var config = {
@@ -238,13 +132,6 @@ connection = mysql.createConnection(config);
 global.configuration = config
 global.conn = connection
 var SelectedTheme = ""
-ipcMain.on("Selected-Theme",function(event,arg){
-  event.sender.send("Returned-Theme",SelectedTheme)
-})
-ipcMain.on("Theme-Changed",(event,arg) => {
-  SelectedTheme = arg
-  fs.writeFile(Theme,SelectedTheme,()=> console.log("fatto"))
-})
 
 let win
 let child
@@ -322,10 +209,11 @@ async function createWindows() {
                       }
                       win.removeMenu()
                       win.show()
-                      /*win.on("close", (event,arg) => {
+
+                      win.on("close", (event,arg) => {
                         if(windowStats) (windowStats.close() , windowStats = null)
                         app.quit()
-                      })*/
+                      })
                       windowStats = new BrowserWindow({width:800,height:600,show: false,frame: true,webPreferences: {
                         enableRemoteModule: true,
                         nodeIntegration: true,
@@ -423,8 +311,9 @@ ipcMain.on("LogOut",function (){
         console.log('Saved!');
     });
     app.removeAllListeners()
-    app.relaunch()
-    app.exit()
+    //app.relaunch()
+    //app.exit()
+    app.quit()
 })
 
 ipcMain.handle("setUserId", async(event,arg) => {
@@ -492,14 +381,6 @@ ipcMain.on('getImg', (event, args) => {
   event.sender.send("ReturnedImg",Img)
 })
 
-/*ipcMain.on('getCpuUsage', (event, args) => {
-  os.cpuUsage(function (v) {
-    event.sender.send("ReturnedCpu",v * 100)
-    event.sender.send("ReturnedMemory",os.freememPercentage() * 100)
-    //event.returnValue = "total-mem", os.totalmem() / 1024);
-  });
-})*/
-
 ipcMain.on('Minimize', async (event, arg) => {
   win.minimize()
 })
@@ -538,32 +419,17 @@ ipcMain.on("SearchProducts",(event,arg) => {
   stockX.newSearchProducts(arg, {
       limit: 8
   })
-  .then(products => (console.log(products),event.sender.send("ReturnedProducts",products)))
+  .then(products => (/*console.log(products),*/event.sender.send("ReturnedProducts",products)))
   .catch(err => console.log(`Error searching: ${err.message}`));
 })
 
-ipcMain.on("RequestedShoeDetailsServer",async (event,arg) => {
-  console.log(arg)
-  console.log("Research of variants by server")
-  var res1 = await got("https://www.boringio.com:5001/GetDetails/Url=" + arg)
-  //console.log(res1.body)
-  event.sender.send("ReturnedProductDetailsServer",res1.body)
-})
-
 ipcMain.on("RequestedShoeDetails",(event,arg) => {
-  console.log("Research of variants by own machine")
   stockX.fetchProductDetails('https://stockx.com/' + arg)
-  .then(product => {
-    console.log(product)
-    if(Object.entries(product).length === 0){
-      event.sender.send("ErrorFoundResearch",{err:"Prodotti vuoti",latestArg:arg})
-    }else{
-      event.sender.send("ReturnedProductDetails",product)
-    }
-  })
+  .then(product => (console.log(product),event.sender.send("ReturnedProductDetails",product)))
   .catch(err => {
     console.log(`Error scraping product details: ${err.message}`)
-  })
+    event.sender.send("ErrorFoundResearch",{err:err.message,lastArg:arg})
+  });
 })
 
 ipcMain.on("RequestedShoeDetailsArray",async (event,arg) => {
@@ -615,7 +481,6 @@ function CreateLog(ObjLog){
   Json.Logs.push(ObjLog)
   fs.writeFileSync(path.join(DirectoryLog, "/LogMessage.json"),JSON.stringify(Json),"utf8")
 }
-
 
 ipcMain.on("CheckConnection",(event,arg)=>{
   internetAvailable().then(function(){
@@ -1009,3 +874,43 @@ async function CreateWindow(arg){
   WindowRegister.removeMenu()
   WindowRegister.show()
 }
+
+ipcMain.on("RequestedShoeDetailsServer",async (event,arg) => {
+  console.log(arg)
+  //console.log("RICHIESTA DETTAGLI DA SERVER DIO BESTIA")
+  /*stockX.fetchProductDetails('https://stockx.com/' + arg)
+  .then(product => (console.log(product),event.sender.send("ReturnedProductDetails",product)))
+  .catch(err => console.log(`Error scraping product details: ${err.message}`),event.sender.send("ErrorFoundResearch",err));*/
+  var res1 = await got("https://www.boringio.com:5001/GetDetails/Url=" + arg)
+  console.log(res1.body)
+  event.sender.send("ReturnedProductDetailsServer",res1.body)
+})
+
+
+autoUpdater.on("checking-for-update", () =>{
+  console.log("Checking for updates")
+})
+autoUpdater.on("update-available", (info) =>{
+  Logger.log("New Update found in the main process")
+  Logger.log(info)
+  //console.log("Update available")
+})
+autoUpdater.on("update-not-available", () =>{
+  //console.log("Update not available")
+  Logger.log("This is the new version")
+  createWindows()
+})
+autoUpdater.on("error", err => {
+  Logger.log("Error")
+  Logger.log(err.toString())
+})
+
+autoUpdater.on('download-progress', (progress) => {
+  Logger.log("Download progress")
+  Logger.log(progress)
+});
+
+autoUpdater.on('update-downloaded', () => {
+  Logger.log("Installing right now")
+  autoUpdater.quitAndInstall()
+});
