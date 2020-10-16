@@ -46,6 +46,22 @@ var GlobalIdUtente = 0
 
 app.on('ready', () => {
   console.log("App ready")
+  windowStats = new BrowserWindow({width:800,height:600,show: false,frame: true,webPreferences: {
+    enableRemoteModule: true,
+    nodeIntegration: true,
+    zoomFactor: 1.0
+  }})
+  windowStats.loadURL(url.format({
+    pathname:path.join(__dirname,'../stats.html'),
+    protocol:'file',
+    slashes:true
+  }))
+  windowStats.removeMenu()
+  windowStats.on("close",(event,arg)=> {
+    event.preventDefault()
+    windowStats.hide()
+    console.log("hidden stats for now")
+  })
   CheckLogFile()
 })
 
@@ -209,32 +225,18 @@ async function createWindows() {
                       }
                       win.removeMenu()
                       win.show()
-
                       win.on("close", (event,arg) => {
-                        if(windowStats) (windowStats.close() , windowStats = null)
+                        //if(windowStats) (windowStats.close() , windowStats = null)
+                        //event.preventDefault()
+                        //windowStats.
                         app.quit()
-                      })
-                      windowStats = new BrowserWindow({width:800,height:600,show: false,frame: true,webPreferences: {
-                        enableRemoteModule: true,
-                        nodeIntegration: true,
-                        zoomFactor: 1.0
-                      }})
-                      windowStats.loadURL(url.format({
-                        pathname:path.join(__dirname,'../stats.html'),
-                        protocol:'file',
-                        slashes:true
-                      }))
-                      windowStats.removeMenu()
-                      windowStats.on("close",(event,arg)=> {
-                        event.preventDefault()
-                        if(windowStats) windowStats.hide()
-                        console.log("hidden stats for now")
                       })
                     }else{
                       console.log("Errore")
                     }
                   }
               }
+
           })
       }
   })
@@ -394,7 +396,7 @@ ipcMain.on('Maximize', async (event, arg) => {
 })
 
 ipcMain.on('AppQuit',async (event,arg) => {
-  app.quit()
+  app.exit()
 })
 
 ipcMain.on('close', async (event, arg) => {

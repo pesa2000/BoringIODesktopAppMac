@@ -53,6 +53,7 @@ function FlipDateAndChange(DateToChange){
 
 
 function SelectedShoesNr(Index){
+    //document.getElementById("stats").innerHTML = ""
     var SelectedShoes = GlobalProducts[Index]
     GlobalIndex = Index
     $("#imageProd").attr("src",SelectedShoes.media.imageUrl)
@@ -60,10 +61,10 @@ function SelectedShoesNr(Index){
 
     CreateLog(`Searched a pair of ${SelectedShoes.name}`,"Market","Search",moment().format('MMMM Do YYYY, h:mm:ss a'))
 
-    var RetailPrice = 0
-    for(var Trait of SelectedShoes.traits){
+    var RetailPrice = SelectedShoes.price
+    /*for(var Trait of SelectedShoes.traits){
         if(Trait.name == "Retail Price") RetailPrice = Trait.value
-    }
+    }*/
 
     $("#UrlToHide").val("https://stockx.com/"+SelectedShoes.url)
     $("#dateProd").text(FlipDateAndChange(SelectedShoes.release_date))
@@ -128,7 +129,7 @@ ipc.on("ReturnedProducts",async (event,arg) => {
     console.log(arg)
     for(var i = 0; i < 4; i++){
         document.getElementById("ricerca").innerHTML += createTemplateResearch(arg,i)
-    }   
+    }
     mostraRicerca()
 })
 
