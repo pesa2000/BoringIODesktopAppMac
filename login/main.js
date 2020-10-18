@@ -1,6 +1,4 @@
 //@ts-ignore
-//      "entitlements": "builds/entitlements.mac.plist",
-//      "entitlementsInherit": "builds/entitlements.mac.plist"
 const fetch = require("node-fetch")
 const request = require("request")
 var moment = require('moment')
@@ -36,6 +34,16 @@ const isPackaged = require('electron-is-packaged').isPackaged
 
 var internetAvailable = require("internet-available");
 
+function GetTodaysMonth(){
+  var today = new Date()
+  var dd = String(today.getDate()).padStart(2, '0')
+  var mm = String(today.getMonth() + 1).padStart(2, '0')
+  var yyyy = today.getFullYear()
+  today = yyyy + '_' + mm + '_' + dd;
+  return mm
+}
+var FilterMonth = GetTodaysMonth()
+
 var DEBUGGER_MODE
 
 const Logger = require("electron-log")
@@ -46,22 +54,6 @@ var GlobalIdUtente = 0
 
 app.on('ready', () => {
   console.log("App ready")
-  windowStats = new BrowserWindow({width:800,height:600,show: false,frame: true,webPreferences: {
-    enableRemoteModule: true,
-    nodeIntegration: true,
-    zoomFactor: 1.0
-  }})
-  windowStats.loadURL(url.format({
-    pathname:path.join(__dirname,'../stats.html'),
-    protocol:'file',
-    slashes:true
-  }))
-  windowStats.removeMenu()
-  windowStats.on("close",(event,arg)=> {
-    event.preventDefault()
-    windowStats.hide()
-    console.log("hidden stats for now")
-  })
   CheckLogFile()
 })
 
@@ -225,18 +217,27 @@ async function createWindows() {
                       }
                       win.removeMenu()
                       win.show()
-                      win.on("close", (event,arg) => {
-                        //if(windowStats) (windowStats.close() , windowStats = null)
-                        //event.preventDefault()
-                        //windowStats.
-                        app.quit()
+                      windowStats = new BrowserWindow({width:800,height:600,show: false,frame: true,webPreferences: {
+                        enableRemoteModule: true,
+                        nodeIntegration: true,
+                        zoomFactor: 1.0
+                      }})
+                      windowStats.loadURL(url.format({
+                        pathname:path.join(__dirname,'../stats.html'),
+                        protocol:'file',
+                        slashes:true
+                      }))
+                      windowStats.removeMenu()
+                      windowStats.on("close",(event,arg)=> {
+                        event.preventDefault()
+                        if(windowStats) windowStats.hide()
+                        console.log("hidden stats for now")
                       })
                     }else{
                       console.log("Errore")
                     }
                   }
               }
-
           })
       }
   })
@@ -261,6 +262,12 @@ async function createWindows() {
     }
     child.removeMenu()
   }
+
+  win.on("close", (event,arg) => {
+    if(windowStats) (windowStats.close() , windowStats = null)
+    connection.end()
+    app.quit()
+  })
 }
 function setValuta(input){
   Valuta = input
@@ -312,10 +319,12 @@ ipcMain.on("LogOut",function (){
     if (err) throw err;
         console.log('Saved!');
     });
+    connection.end()
     app.removeAllListeners()
     //app.relaunch()
     //app.exit()
     app.quit()
+
 })
 
 ipcMain.handle("setUserId", async(event,arg) => {
@@ -396,6 +405,7 @@ ipcMain.on('Maximize', async (event, arg) => {
 })
 
 ipcMain.on('AppQuit',async (event,arg) => {
+  //app.quit()
   app.exit()
 })
 
@@ -483,6 +493,7 @@ function CreateLog(ObjLog){
   Json.Logs.push(ObjLog)
   fs.writeFileSync(path.join(DirectoryLog, "/LogMessage.json"),JSON.stringify(Json),"utf8")
 }
+
 
 ipcMain.on("CheckConnection",(event,arg)=>{
   internetAvailable().then(function(){
@@ -717,11 +728,10 @@ var TotWeek5 = 0
 ipcMain.on("RequestedDataGraphs", (event,arg) => {
   ResetVar()
   DATAGRAPHS.length = 0
-  console.log("DATAGRAPHS POULITO")
+  console.log("DATAGRAPHS PULITO")
   console.log(DATAGRAPHS)
   console.log("Richiesta arrivata")
-  console.log("Filtro scelto" + arg.p1)
-  if(arg.p1 == "Year"){
+  if(FilterMonth == "Year"){
     connection.query("SELECT Profitto,MONTH(DataVendita) as Mese FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,GetNewDateYear()],  function (error, results, fields) {
       for(var k of results){
         SetMonthLifetime(k)
@@ -743,21 +753,17 @@ ipcMain.on("RequestedDataGraphs", (event,arg) => {
         DATAGRAPHS.push({y: `Oct`, item1: TotMonth10})
         DATAGRAPHS.push({y: `Nov`, item1: TotMonth11})
         DATAGRAPHS.push({y: `Dec`, item1: TotMonth12})
-        if(arg.p2 == "OnLoad"){
-          event.sender.send("ReturnedDataGraphsOnLoad",DATAGRAPHS)
-        }else{
-          event.sender.send("ReturnedDataGraphsFutureCalls",DATAGRAPHS)
-        }
+        event.sender.send("ReturnedDataGraphsMorris",DATAGRAPHS)
       })
     })
   }else{
-    connection.query("SELECT NomeProdotto,PrezzoProdotto,DAY(DataVendita) as Giorno,Profitto FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,parseInt(GetNewDateYear()),arg.p1],  function (error, results, fields) {
+    connection.query("SELECT NomeProdotto,PrezzoProdotto,DAY(DataVendita) as Giorno,Profitto FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,parseInt(GetNewDateYear()),FilterMonth],  function (error, results, fields) {
       if(error) console.log(error)
       ResetVar2()
       for(var k of results){
         SetWeekProfit(k)
       }
-      connection.query("SELECT NomeProdotto,PrezzoProdotto,DAY(DataVendita) as Giorno,Profitto FROM inventariocustom WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,parseInt(GetNewDateYear()),arg.p1],function(error,results,fields){
+      connection.query("SELECT NomeProdotto,PrezzoProdotto,DAY(DataVendita) as Giorno,Profitto FROM inventariocustom WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,parseInt(GetNewDateYear()),FilterMonth],function(error,results,fields){
         if(error)console.log(error)
         for(var c of results){
           SetWeekProfit(c)
@@ -767,11 +773,7 @@ ipcMain.on("RequestedDataGraphs", (event,arg) => {
         DATAGRAPHS.push({y: `Third Week`, item1: TotWeek3})
         DATAGRAPHS.push({y: `Fourth Week`, item1: TotWeek4})
         DATAGRAPHS.push({y: `Fifth Week`, item1: TotWeek5})
-        if(arg.p2 == "OnLoad"){
-          event.sender.send("ReturnedDataGraphsOnLoad",DATAGRAPHS)
-        }else{
-          event.sender.send("ReturnedDataGraphsFutureCalls",DATAGRAPHS)
-        }
+        event.sender.send("ReturnedDataGraphsMorris",DATAGRAPHS)
       })
     })
   }
@@ -916,3 +918,11 @@ autoUpdater.on('update-downloaded', () => {
   Logger.log("Installing right now")
   autoUpdater.quitAndInstall()
 });
+
+ipcMain.on("StoreSavedMonthFilter",(event,arg)=>{
+  FilterMonth = arg
+})
+
+ipcMain.on("RequestedMonthFilter",(event,arg)=>{
+  event.sender.send("ReturnedMonthFilter",FilterMonth)
+})

@@ -65,7 +65,7 @@ async function SwitchAlert(){
                 $("#MessageExport").css("display","inline-block")
                 await sleep(5000)
                 $("#MessageExport").css("display","none")
-                break;
+                break;    
         }
         ipc.send("ResetAlert")
     }
@@ -77,17 +77,14 @@ function TemplateShoe(Id,ProductName,ReleaseDate,Site,Price,Value,Size,Photo){
     Value = Value.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0]
     return `<tr id = "${ProductName}" >` +
     "<td>" +
-      "<div class='media align-items-center position-relative'><img class='rounded border border-200' src='"+Photo+"' width='60' alt='' />" +
-        "<div class='media-body ml-3'>" +
-          "<h6 class='mb-1 font-weight-bold text-700' style='color:#fff !important;'>"+ ProductName +"</h6>" +
-          //"<span class='badge badge rounded-capsule badge-soft-info' data-toggle='modal' data-target='#ask' style=cursor:pointer>" +
-            //  "Place ask" +
-          //"</span>" +
-        "</div>" +
-      "</div>" +
-    "</td>"  +
-    "<td class='align-middle'>"+ ReleaseDate +"</td>" +
-    "<td class='align-middle'>"+ Site +"</td>" +
+    "<div class='media align-items-center position-relative'><img class='rounded border border-200' src='"+Photo+"' width='60' alt=''/>" +
+    "<div class='media-body ml-3'>" +
+      "<h6 class='mb-1 font-weight-semi-bold'>"+ ProductName +"</h6>" +
+      "<span class='badge badge rounded-capsule badge-light mb-0'>" + ReleaseDate+ "</span>" +
+    "</div>" +
+  "</div>" +
+"</td>" +
+    "<td class='align-middle font-weight-semi-bold'>"+ Site +"</td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+Valuta + " " + Price + "</span></td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>"+Valuta + " " + Value + "</span></td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-warning'>"+ Size +"<span  data-fa-transform='shrink-2'></span></span></td>" +
@@ -113,14 +110,14 @@ function TemplateShoeCustom(Id,ProductName,ReleaseDate,Site,Price,Size,Photo){
     if(Site == ""){Site = "No Site"}
     return `<tr id = "${ProductName}" >` +
     "<td>" +
-      "<div class='media align-items-center position-relative'><img class='rounded border border-200' src='"+Photo+"' width='60' alt='' />" +
+        "<div class='media align-items-center position-relative'><img class='rounded border border-200' src='"+Photo+"' width='60' alt=''/>" +
         "<div class='media-body ml-3'>" +
-          "<h6 class='mb-1 font-weight-bold text-700' style='color:#fff !important;'>"+ ProductName +"</h6>" +
+        "<h6 class='mb-1 font-weight-semi-bold'>"+ ProductName +"</h6>" +
+        "<span class='badge badge rounded-capsule badge-light mb-0'>" + ReleaseDate+ "</span>" +
         "</div>" +
-      "</div>" +
-    "</td>"  +
-    "<td class='align-middle'>"+ ReleaseDate +"</td>" +
-    "<td class='align-middle'>"+ Site +"</td>" +
+    "</div>" +
+    "</td>" +
+    "<td class='align-middle font-weight-semi-bold'>"+ Site +"</td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-success'>"+Valuta + " " + Price + "</span></td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-info'>"+Valuta + " " +"?</span></td>" +
     "<td class='align-middle'><span class='badge badge rounded-capsule badge-soft-warning'>"+ Size +"<span  data-fa-transform='shrink-2'></span></span></td>" +
@@ -212,7 +209,6 @@ ipc.on("ReturnedProductDetails", async(event,arg) => {
 })
 
 ipc.on("ReturnedProductDetailsServer", async(event,arg) => {
-  console.log("Returned product from the server")
     arg = JSON.parse(arg)
     windowStats.webContents.send("fillVariantStats",arg)
     for(var Variant of arg.variants){
@@ -241,11 +237,10 @@ function PrintSearchedProducts(Products){
 
 function LoadShoesModal(){
     var ProductChosen = $("#productsScraped option:selected").val()
-    console.log("Product chosen before the request")
     console.log(ProductChosen)
     if(ProductChosen != 0){
-      console.log("Request started to the server")
-        ipc.send("RequestedShoeDetailsServer",ProductChosen)
+        ipc.send("RequestedShoeDetails",ProductChosen)
+        //ipc.send("RequestedShoeDetailsServer",ProductChosen)
         windowStats.webContents.send("open")
         var SelectedProd = GlobalProducts.filter(function(prod){
             return prod.url == ProductChosen
@@ -272,14 +267,14 @@ function LoadShoes(){
         ipc.on("ReturnedId",async (event,arg) => {
             console.log(arg)
             UserId = arg
-            connection.query("SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 1",UserId,  function (error, results, fields) {
+            connection.query("SELECT * FROM inventario WHERE IdUtente like ? AND QuantitaAttuale = 1 ORDER BY DataAggiunta DESC",UserId,  function (error, results, fields) {
                 if(error) {console.log(error);$("#MessageError").css("display","inline-block")}
                 ShoesList = results
                 console.log(ShoesList)
                 PopulateTable()
                 Util.StockXItems(ShoesList,Valuta)
             })
-            connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 1",UserId,  function (error, results, fields) {
+            connection.query("SELECT * FROM inventariocustom WHERE IdUtente like ? AND QuantitaAttuale = 1 ORDER BY DataAggiunta DESC",UserId,  function (error, results, fields) {
                 if(error) {console.log(error);$("#MessageError").css("display","inline-block")}
                 CustomList = results
                 console.log(CustomList)
@@ -324,7 +319,7 @@ function PopulateTable(){
     for(var Shoe of ShoesList){
         var NewDate = FlipDateAndChange(Shoe.ReleaseDate)
         var Shoe = TemplateShoe(Shoe.IdProdotto,Shoe.NomeProdotto,NewDate,Shoe.Sito,Shoe.PrezzoProdotto,Shoe.PrezzoMedioResell,Shoe.Taglia,Shoe.ImmagineProdotto)
-        $("#Inventory").append(Shoe)
+        $("#Inventory").append(Shoe)    
     }
     //$("#Preloader1").css("display","none")
 }
@@ -332,7 +327,7 @@ function PopulateTableCustom(){
     for(var CustomObj of CustomList){
         var NewDate = FlipDateAndChange(CustomObj.ReleaseDate)
         var Custom = TemplateShoeCustom(CustomObj.IdProdotto,CustomObj.NomeProdotto,NewDate,CustomObj.Sito,CustomObj.PrezzoProdotto,CustomObj.Taglia,CustomObj.ImmagineProdotto)
-        $("#Inventory").append(Custom)
+        $("#Inventory").append(Custom)    
     }
     $("#Preloader1").css("display","none")
 }
@@ -646,7 +641,7 @@ function DeleteCustom(Id){
 
 function DuplicateCustom(Id){
     for(var CustomSelected of CustomList){
-        if(CustomSelected.IdProdotto == Id){
+        if(CustomSelected.IdProdotto == Id){    
             console.log("trovato")
             var Query = "INSERT INTO inventariocustom (NomeProdotto,ReleaseDate,PrezzoProdotto,Taglia,QuantitaTotale,QuantitaAttuale,Sito,Compratore,ImmagineProdotto,PrezzoVendita,Profitto,Note,DataAggiunta,IdConto,IdUtente) values (?)"
             var Values = [
@@ -744,7 +739,9 @@ function EditCustom(){
         location.reload()
     })
 }
+
 ipc.on("ErrorFoundResearch",function(event,arg){
+    console.log("Error while scraping this product")
     console.log(arg.err)
     console.log("Trying to ask to the server")
     ipc.send("RequestedShoeDetailsServer",arg.latestArg)

@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
 
-
     <!-- ===============================================-->
     <!--    Document Title-->
     <!-- ===============================================-->
@@ -79,6 +78,10 @@
       function mostraRicerca(){
       document.getElementById('ricerca').style.display="block";
     }
+    function visibleSearch(){
+      document.getElementById("Filter").style.display="inline";
+      document.getElementById("cerca").style.display="none";
+    }
     </script>
     <!-- ===============================================-->
     <!--    Main Content-->
@@ -100,7 +103,6 @@
           </span>
         </div>
         <nav class="navbar navbar-light navbar-glass navbar-top navbar-expand-lg" style="outline:none;">
-          <button class="btn navbar-toggler-humburger-icon navbar-toggler mr-1 mr-sm-3" type="button" data-toggle="collapse" data-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
           <a class="navbar-brand mr-1 mr-sm-3">
             <div class="d-flex align-items-center"><img class="mr-2" src="assets/img/illustrations/boring-piccolo.png" alt="" width="40" /><span class="text-sans-serif" style="color:#f5803e">boring</span></div>
           </a>
@@ -133,69 +135,74 @@
           </ul>
           </div>
           <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
-            <li class="nav-item dropdown dropdown-on-hover"><a class="nav-link pr-0" id="navbarDropdownUser" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <div class="avatar avatar-xl">
-                  <span style="float: right;" id = "nickName"></span>
-             </div>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right py-0" aria-labelledby="navbarDropdownUser">
-              <div class="bg-white rounded-soft py-2">
-                <a class="dropdown-item" href="settings.html">Settings</a>
-                <a class="dropdown-item" onclick="LogOut()">Logout</a>
-              </div>
+            <div id="dashboard-actions">
+
+                <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #6C63FF !important;color: #fff;" type="button" data-toggle="modal" data-target="#new">
+                  <span  data-toggle="tooltip" data-placement="top" title="Add item from stockx">
+                  <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
+                </span>
+               </button>
+              
+               <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #FABF30 !important;color: #fff;" type="button"  data-toggle="modal" data-target="#newCustom">
+                <span data-toggle="tooltip" data-placement="top" title="Add custom item">
+                <span class="fas fa-edit" data-fa-transform="shrink-3 down-2"></span>
+                </span>
+              </button>
+             
+
+               <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #2C96F1 !important;color: #fff;" type="button" onclick="SyncAvgPrice()">
+                  <span data-toggle="tooltip" data-placement="top" title="Refresh value for every item">
+                  <span class="fas fa-sync-alt" data-fa-transform="shrink-3 down-2"></span>
+                  </span>
+              </button>   
+             
+
+              <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #FF6584 !important;color: #fff;" type="button" data-toggle="modal" data-target="#stats" >
+                <span data-toggle="tooltip" data-placement="top" title="See all statistics">
+                <span class="fas fa-chart-bar" data-fa-transform="shrink-3 down-2"></span>
+              </span>
+              </button>
+
+              <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #f1743f !important;color: #fff;" type="button" onclick="Export()">
+                <span data-toggle="tooltip" data-placement="top" title="Export your inventory">
+                <span class="fas fa-external-link-alt" data-fa-transform="shrink-3 down-2"></span>
+                </span>
+              </button>
+
+              <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #4BB543 !important;color: #fff;" type="button" id="cerca" onclick="visibleSearch()">
+                <span data-toggle="tooltip" data-placement="top" title="Search items in your inventory">
+                <span class="fas fa-search" data-fa-transform="shrink-3 down-2"></span>
+              </span>
+              </button>
+                  <input type="text" id = "Filter" style="display: none;" onkeyup="FilterTable()" class="btn btn-falcon-default btn-sm" placeholder="Filter items">
             </div>
-          </li>
           </ul>
         </nav>
         <div class="content">
-          <div class="card mb-3 bg-200">
-            <div class="card-header bg-200">
-              <div class="row align-items-center justify-content-between">
-                <div class="alert alert-export" role="alert" style="display: none;" id="MessageExport">Inventory Exported</div>
-                <div class="alert alert-edit" role="alert" style="display: none;" id="MessageEdit">Item edited</div>
-                <div class="alert alert-duplicate" role="alert" style="display: none;" id="MessageDuplicate">Item duplicated</div>
-                <div class="alert alert-sold" role="alert" style="display: none;" id="MessageSale">Item sold</div>
-                <div class="alert alert-delete" role="alert" style="display: none;" id="MessageDelete">Item deleted</div>
-                <div class="alert alert-add" role="alert" style="display: none;" id="MessageAdd">New item added</div>
-                <div class="alert alert-primary" role="alert" style="display: none;" id="MessageSync">Synchronizing prices</div>
-                <div class="alert alert-danger" role="alert" style="display: none;" id="MessageError">Connection error...</div>
-                <div class="col-6 col-sm-auto ml-auto text-right pl-0">
-                  <div id="dashboard-actions">
-                    <button class="btn btn-falcon-default btn-sm mx-2" type="button" data-toggle="modal" data-target="#new">
-                      <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
-                      <span class="d-none d-sm-inline-block ml-1">New</span>
-                  </button>
-                    <button class="btn btn-falcon-default btn-sm" type="button" data-toggle="modal" data-target="#newCustom">
-                      <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
-                      <span class="d-none d-sm-inline-block ml-1">Custom</span>
-                  </button>
-                     <button class="btn btn-falcon-default btn-sm mx-2" type="button" onclick="SyncAvgPrice()">
-                        <span class="fas fa-sync-alt" data-fa-transform="shrink-3 down-2"></span>
-                        <span class="d-none d-sm-inline-block ml-1">Sync</span>
-                    </button>
-                    <button class="btn btn-falcon-default btn-sm" type="button" onclick="Export()">
-                        <span class="fas fa-external-link-alt" data-fa-transform="shrink-3 down-2"></span>
-                        <span class="d-none d-sm-inline-block ml-1">Export</span>
-                    </button>
-                    <button class="btn btn-falcon-default btn-sm mx-2" type="button" data-toggle="modal" data-target="#stats">
-                        <span class="fas fa-chart-bar" data-fa-transform="shrink-3 down-2"></span>
-                        <span class="d-none d-sm-inline-block ml-1">Statistics</span>
-                    </button>
-                    </div>
-                </div>
+          <div class="header-body">
+            <div class="row align-items-end">
+              <div class="col">
+        
+                <!-- Title -->
+                <h1 class="header-title">
+                  Inventory
+                </h1>
+                <span class="alert alert-export" role="alert" style="display: none;float: right;" id="MessageExport">Inventory Exported</span>
+                <span class="alert alert-edit" role="alert" style="display: none;float: right;" id="MessageEdit">Item edited</span>
+                <span class="alert alert-duplicate" role="alert" style="display: none;float: right;" id="MessageDuplicate">Item duplicated</span>
+                <span class="alert alert-sold" role="alert" style="display: none;float: right;" id="MessageSale">Item sold</span>
+                <span class="alert alert-delete" role="alert" style="display: none;float: right;" id="MessageDelete">Item deleted</span>
+                <span class="alert alert-add" role="alert" style="display: none; float: right;" id="MessageAdd">New item added</span>
+                <span class="alert alert-primary" role="alert" style="display: none;float: right;" id="MessageSync">Synchronizing prices</span>
+                <span class="alert alert-danger" role="alert" style="display: none;float: right;" id="MessageError">Connection error...</span>
               </div>
-            </div>
-            <div class="card-header bg-200">
-              <h1 style="text-align: center;">
-                <input type="text" id = "Filter" onkeyup="FilterTable()" class="btn btn-falcon-default btn-sm" placeholder="Filter items" style="width: auto;">
-                <div id="ricerca" style="display:none !important;background-color: #132238;display: block;margin-left: auto;margin-right: auto;width: 55%;height: 245px;border-radius: 4px;text-align: left;"></div>
-              </h1>
-            </div>
+            </div> <!-- / .row -->
+          </div>
+          <div class="card mb-3 bg-200">
                 <table class="table table-borderless table-hover">
                   <thead class="text-900">
                     <tr>
                       <th class="sort pr-1 align-middle">Name</th>
-                      <th class="sort pr-1 align-middle">Date</th>
                       <th class="sort pr-1 align-middle">Site</th>
                       <th class="sort pr-1 align-middle">Price</th>
                       <th class="sort pr-1 align-middle">Value</th>
@@ -205,7 +212,7 @@
                     </tr>
                   </thead>
                   <tbody id = "Inventory">
-
+                    
                  </tbody>
                 </table>
           </div>
@@ -234,7 +241,7 @@
                       <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text" id = "prodPrice" /></div>
                       <div class="form-group col-6"><label for="modal-auth-password">Size</label>
                         <select class="form-control" type="text"  id = "prodSize" >
-
+                          
                         </select></div>
                       <div class="form-group col-6"><label for="modal-auth-password">Date</label><input class="form-control datetimepicker" id="wizard-datepicker" type="text" data-options='{"dateFormat":"d/m/Y"}' /></div>
                       <div class="form-group col-6"><label for="modal-auth-password">Site</label><input class="form-control" type="text"  id = "prodSite"/></div>
@@ -314,7 +321,7 @@
                       <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text"  id = "PriceToModify"/></div>
                       <div class="form-group col-6"><label for="modal-auth-password">Size</label>
                         <select class="form-control" id = "SizeToModify" >
-
+                          
                         </select></div>
                       <div class="form-group col-6"><label for="modal-auth-password">Date</label><input class="form-control datetimepicker" id="wizard-datepicker2" type="text" data-options='{"dateFormat":"d/m/Y"}' /></div>
                       <div class="form-group col-6"><label for="modal-auth-password">Site</label><input class="form-control" type="text"  id = "SiteToModify"/></div>
@@ -552,7 +559,7 @@
     <!-- ===============================================-->
     <!--    JavaScripts-->
     <!-- ===============================================-->
-    <script>if (typeof module === 'object')
+    <script>if (typeof module === 'object') 
     {window.module = module; module = undefined;}</script>
     <script src="assets/js/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>    <script src="assets/lib/@fortawesome/all.min.js"></script>
@@ -576,6 +583,6 @@
     <script src="assets/lib/flatpickr/flatpickr.min.js"></script>
     <script src="assets/js/theme.min.js"></script>
     <script src="scripts/inventory.js" defer></script>
-    <script>if(window.module){module = window.module;}</script>
+    <script>if(window.module){module = window.module;}</script> 
   </body>
 </html>

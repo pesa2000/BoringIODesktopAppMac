@@ -42,7 +42,7 @@ function GetTodaysDate() {
 
 function ContainsBrand(BrandCompleteName){
     for(var SingleBrand of ArrBotBrand){
-        if(SingleBrand.BrandBeautify == BrandCompleteName){
+        if(SingleBrand.BrandBeautify == BrandCompleteName){   
             return true
         }
     }
@@ -57,19 +57,19 @@ function LoadBots() {
     ipc.send("getUserId");
     ipc.on("ReturnedId", async (event, arg) => {
       console.log(arg);
-      if(data == "" || data == null){
-        BotFile = {BotsList:[]}
-      }else{
-        BotFile = JSON.parse(data)
+      try{
+        BotFile = JSON.parse(data);
+        console.log(BotFile)
+      }catch(err){
+        console.log(err)
+        BotFile = { BotsList: []}
       }
-      //BotFile = JSON.parse(data)
-      console.log(BotFile.BotsList)
-      if(BotFile.BotsList.length > 0){
+      if(data != ""){
         console.log(BotFile)
         for (var BotLoaded of BotFile.BotsList) {
             //console.log(BotLoaded);
             var obj = {
-                BrandBeautify: BotLoaded.BotBrandToPrint,
+                BrandBeautify: BotLoaded.BotBrandToPrint, 
                 Brand: BotLoaded.BotBrand
             }
             if(ContainsBrand(BotLoaded.BotBrandToPrint) == false){ ArrBotBrand.push(obj)}
@@ -83,7 +83,7 @@ function LoadBots() {
         $("#Preloader1").css("display", "none");
         console.log("No Bots Loaded")
       }
-    });
+    }); 
   }else{
     var BotFileToWrite = {BotsList:[]}
     fs.writeFile(path.join(DirectoryBot,"/BotKeys.json"),JSON.stringify(BotFileToWrite),() =>{
@@ -135,7 +135,7 @@ function DetailsBrand(Brand) {
     "<div class='form-group col-12'>" +
     `<label for='modal-auth-confirm-password'><span class="badge badge-soft-success rounded-capsule">${Bot.Created}</span></label>` +
     "<h4>" +
-    Bot.BotKey +
+    Bot.BotKey + 
     "</h4>" +
     `<span class='badge badge-soft-danger rounded-capsule' style='float:right; cursor: pointer;' onclick='DeleteBot("${Bot.BotKey}")'>`+
       "Delete" +

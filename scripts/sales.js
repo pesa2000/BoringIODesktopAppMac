@@ -117,7 +117,7 @@ function LoadSales(){
     ipc.on("ReturnedId",(event,arg) => {
         UserId = arg
         GetValutaAsUtf8(UserId)
-        var Query = "SELECT * FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0"
+        var Query = "SELECT * FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0 ORDER BY DataVendita DESC"
         connection.query(Query,UserId,function(error,results,fields){
             console.log(results)
             SalesList = results
@@ -138,7 +138,7 @@ function LoadSales(){
             }
             //$("#Preloader1").css("display","none")
         })
-        var Query = "SELECT * FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0"
+        var Query = "SELECT * FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0 ORDER BY DataVendita DESC"
         connection.query(Query,UserId,function(error,results,fields){
             console.log(results)
             SalesListCustom = results

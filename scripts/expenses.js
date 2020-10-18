@@ -24,7 +24,7 @@ var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion
 
 var Currency = UtilCurr.GetCurrencyFromUTF8(Valuta)
 console.log(Currency)
-
+ 
 var Price = 0
 var Name = ""
 var Type = ""
@@ -159,18 +159,34 @@ function FillCards(){
 }
 
 function CreateCard(Cost){
+  var RecurrencyMonth = ""
+  switch(Cost.MesiRicorrenza){
+    case 0:
+      RecurrencyMonth = "One time cost"
+      break;
+    case 1:
+      RecurrencyMonth = "Renewal every month"
+      break;
+    case 12:
+      RecurrencyMonth = "Renewal every year"
+      break;
+    default:
+      RecurrencyMonth = "Renewal every " + Cost.MesiRicorrenza + " months"
+      break;
+  }
+
   return "<div class='kanban-item'>" +
   "<div class='card kanban-item-card hover-actions-trigger' data-toggle='modal' data-target='#kanban-modal-1'>" +
     "<div class='card-body position-relative'>" +
       `<div class='mb-2'><span class='badge d-inline-block py-1 mr-1 mb-1 badge-soft-success'>Date: ${FlipDateAndChange(Cost.DataCosto)}</span><span class='badge d-inline-block py-1 mr-1 mb-1 badge-soft-primary'>Price: ${Cost.PrezzoCosto + " " + Currency} </span></div>`+
-      `<p class='mb-0 font-weight-medium text-sans-serif'>${Cost.DescrizioneCosto}</p>`+
+      `<p class='mb-0 font-weight-medium text-sans-serif'>${Cost.DescrizioneCosto}</p>`+ 
       "<div class='dropdown position-absolute text-sans-serif t-0 r-0 mt-card mr-card hover-actions'><button class='btn btn-sm btn-falcon-default py-0 px-2' type='button' data-boundary='viewport' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='fas fa-ellipsis-h' data-fa-transform='shrink-2'></span></button>" +
           "<div class='dropdown-menu dropdown-menu-right py-0'>" +
             "<a class='dropdown-item text-danger' onclick='Delete("+ Cost.IdCosto +")'>Remove</a>" +
           "</div>" +
         "</div>" +
       "<div class='kanban-item-footer'>" +
-        "<div class='text-500'><span class='mr-2' data-toggle='tooltip'><span class='fas fa-check mr-1'></span><span></span></span></div>" +
+        "<div class='text-500'><span class='mr-2' data-toggle='tooltip'>"+RecurrencyMonth+"<span></span></span></div>" +
         "<div>" +
           "<div class='avatar avatar-l' data-toggle='tooltip'>" +
           `<img class='rounded-circle' src='${Cost.UrlFoto}' alt=''/>` +
@@ -216,7 +232,7 @@ function AddProxy(){
 
     var Obj = {
       "UrlFoto": Img,
-      "NomeSelezioneCosto": Type,
+      "NomeSelezioneCosto": Type, 
       "PrezzoCosto": Price,
       "DescrizioneCosto": Name,
       "MesiRicorrenza": Recurrency,
@@ -230,7 +246,7 @@ function AddProxy(){
   }
 }
 
-// COOKGROUP SECTION
+// COOKGROUP SECTION 
 
 function AddCookGroup(){
   Name = $("#CookGroupsList option:selected").val()
@@ -261,7 +277,7 @@ function AddCookGroup(){
 
     var Obj = {
       "UrlFoto": Img,
-      "NomeSelezioneCosto": Type,
+      "NomeSelezioneCosto": Type, 
       "PrezzoCosto": Price,
       "DescrizioneCosto": Name,
       "MesiRicorrenza": Recurrency,
@@ -306,7 +322,7 @@ function AddBot(){
 
     var Obj = {
       "UrlFoto": Img,
-      "NomeSelezioneCosto": Type,
+      "NomeSelezioneCosto": Type, 
       "PrezzoCosto": Price,
       "DescrizioneCosto": Name,
       "MesiRicorrenza": Recurrency,
@@ -352,7 +368,7 @@ function AddShip(){
 
     var Obj = {
       "UrlFoto": Img,
-      "NomeSelezioneCosto": Type,
+      "NomeSelezioneCosto": Type, 
       "PrezzoCosto": Price,
       "DescrizioneCosto": Name,
       "MesiRicorrenza": Recurrency,
@@ -392,7 +408,7 @@ function AddOther(){
 
     var Obj = {
       "UrlFoto": Img,
-      "NomeSelezioneCosto": Type,
+      "NomeSelezioneCosto": Type, 
       "PrezzoCosto": Price,
       "DescrizioneCosto": Name,
       "MesiRicorrenza": Recurrency,
@@ -415,7 +431,7 @@ function SendToDB(Obj){
   console.log(ArrMonths.length)
 
   if(Obj.MesiRicorrenza != 0){
-    var StartingMonth = parseInt(Obj.DataCosto.split("-")[1])
+    var StartingMonth = parseInt(Obj.DataCosto.split("-")[1]) 
     console.log(StartingMonth)
     var m = 0
     var RecMonths = parseInt(Obj.MesiRicorrenza)
@@ -435,7 +451,7 @@ function SendToDB(Obj){
   connection.query(Query,Values,function(err,results,fields){
     if(err)console.log(err)
     CreateLog(`Added a new expenses (${Values[0][0]})`,"Expenses","Add",moment().format('MMMM Do YYYY, h:mm:ss a'))
-    location.reload()
+    //location.reload()
   })
 }
 

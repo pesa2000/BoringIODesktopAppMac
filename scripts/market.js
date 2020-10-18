@@ -53,24 +53,18 @@ function FlipDateAndChange(DateToChange){
 
 
 function SelectedShoesNr(Index){
-    //document.getElementById("stats").innerHTML = ""
     var SelectedShoes = GlobalProducts[Index]
     GlobalIndex = Index
     $("#imageProd").attr("src",SelectedShoes.media.imageUrl)
     $("#nameProd").text(SelectedShoes.name)
-
     CreateLog(`Searched a pair of ${SelectedShoes.name}`,"Market","Search",moment().format('MMMM Do YYYY, h:mm:ss a'))
-
+    console.log("Debug Market")
+    console.log(SelectedShoes)
     var RetailPrice = SelectedShoes.price
-    /*for(var Trait of SelectedShoes.traits){
-        if(Trait.name == "Retail Price") RetailPrice = Trait.value
-    }*/
-
     $("#UrlToHide").val("https://stockx.com/"+SelectedShoes.url)
     $("#dateProd").text(FlipDateAndChange(SelectedShoes.release_date))
-    $("#prodRetail").text("Retail: " + Currency + "" + Conversion * RetailPrice)
+    $("#prodRetail").text("Retail: " + Currency + "" + RetailPrice)
     $("#prodSold").text("Tot.Sold: " + SelectedShoes.deadstock_sold)
-
     ipc.send("RequestedShoeDetails",SelectedShoes.url)
 }
 
@@ -117,7 +111,7 @@ function createTemplateResearch(Prods,Index){
         "<img src='"+Prods[Index].media.imageUrl+"' style='width: 64px;border-radius: .25rem !important;margin-left: 5px;'>"+
     "</div>" +
     "<div class='media-body fs--1'>" +
-        "<h6 class='fs-0'>" +Prods[Index].name+ "&nbsp&nbsp</h6>" +
+        "<h6 class='fs-0'>" +Prods[Index].name+ "&nbsp&nbsp</h6><br>" +
         "<span class='badge badge rounded-capsule badge-soft-success'>" + FlipDateAndChange(Prods[Index].release_date)+ "</span>" +
     "</div> " +
     "</div>"
@@ -129,7 +123,7 @@ ipc.on("ReturnedProducts",async (event,arg) => {
     console.log(arg)
     for(var i = 0; i < 4; i++){
         document.getElementById("ricerca").innerHTML += createTemplateResearch(arg,i)
-    }
+    }   
     mostraRicerca()
 })
 
