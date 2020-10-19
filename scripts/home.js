@@ -12,6 +12,7 @@ console.log(UserId)
 var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
 
 var Valuta = ""
+var flag = true
 
 GetValutaAsUtf8(UserId)
 function GetValutaAsUtf8(Id){
@@ -51,32 +52,44 @@ function GetNewDateYear(){
     //console.log(d[2])
     return d[2]
 }
-
+  
 function GetNewDateMonth(){
     var m = moment(new Date()).format("DD[/]MM[/]YYYY").split("/")
     //console.log(m[1])
     return m[1]
 }
+  
+
 function GetDateRightFormat(DateToChange){
-  return moment(DateToChange).format("MMMM do YYYY")
+    return moment(DateToChange).format('MMMM do YYYY')
 }
 
-
 $(document).ready(async () => {
-  ipc.send("ReturnStripeSub")
-  ipc.on("ReturnedSub",(event,arg)=>{
-      document.getElementById("SubscriptionEnd").innerHTML = GetDateRightFormat(arg.User.current_period_end * 1000)
-      ipc.send("RequestedMonthFilter")
-  })
-  ipc.on("ReturnedMonthFilter",(event,arg)=>{
-      console.log("Mese tornato dal main")
-      console.log(arg)
-      $("#FilterDate").val(parseInt(arg))
-      console.log("Mese scelto")
-      console.log($("#FilterDate").val())
-      LoadStats(arg)
-      ChangeLog()
-  })
+    console.log("Documento Pronto")
+    ipc.send("ReturnStripeSub")
+})
+
+ipc.on("ReturnedSub",(event,arg) => {
+    console.log("Stripe subscription")
+    console.log(arg)
+    document.getElementById("SubscriptionEnd").innerHTML = GetDateRightFormat(arg.User.current_period_end * 1000)
+    ipc.send("RequestedMonthFilter")
+})
+ipc.on("ReturnedMonthFilter",(event,arg)=>{
+    if(flag == true){
+        flag = false
+        console.log("MESE RITORNATO DAL MAIN")
+        console.log(arg)
+        if(arg == "Year"){
+            $("#FilterDate").val("Year")
+        }else{
+            $("#FilterDate").val(parseInt(arg))
+        }
+        console.log("Mese scelto")
+        console.log($("#FilterDate").val())
+        LoadStats(arg)
+        ChangeLog()
+    }
 })
 /*
 ipc.send("RequestedDataGraphs",{p1:$("#FilterDate").val(),p2:"OnLoad"})
@@ -105,19 +118,21 @@ async function Changed(){
 }
 
 async function LoadStats(Filter){
+    console.log("Funzione Load stats")
     GlobalFilter = Filter
     console.log(GlobalFilter)
     ChangeValues()
 }
 
 function ChangeValues(){
+    console.log("Sto cambiando i valori")
     if(Done == false){
         Done = true
         var EntireInv
         var EntireInvCustom
         var TotInventoryValue = 0
         var TotPurchases = 0
-        var TotSales = 0
+        var TotSales = 0 
         var TotProfitTime = 0
         var TotProfitLifetime = 0
         console.log("Filter nel change values")
@@ -152,7 +167,7 @@ function ChangeValues(){
             for(var Item of EntireInv){
                 TotInventoryValue += Item.PrezzoMedioResell
                 TotPurchases += Item.PrezzoProdotto
-                TotSales += Item.PrezzoVendita
+                TotSales += Item.PrezzoVendita 
             }
             connection.query(Query2,Values2,function(error,results,fields){
                 if(error)console.log(error)
@@ -208,6 +223,7 @@ function ChangeValues(){
 }
 
 function ChangeLog(){
+    console.log("Cambio del change log")
     console.log(UserId)
     connection.query("SELECT * FROM inventario WHERE IdUtente = ? ORDER BY DataAggiunta DESC LIMIT 2",UserId,function(error,results,fields){
         if(error)console.log(error)

@@ -34,6 +34,7 @@ const isPackaged = require('electron-is-packaged').isPackaged
 
 var internetAvailable = require("internet-available");
 
+
 function GetTodaysMonth(){
   var today = new Date()
   var dd = String(today.getDate()).padStart(2, '0')
@@ -42,6 +43,7 @@ function GetTodaysMonth(){
   today = yyyy + '_' + mm + '_' + dd;
   return mm
 }
+
 var FilterMonth = GetTodaysMonth()
 
 var DEBUGGER_MODE
@@ -324,7 +326,7 @@ ipcMain.on("LogOut",function (){
     //app.relaunch()
     //app.exit()
     app.quit()
-
+    
 })
 
 ipcMain.handle("setUserId", async(event,arg) => {
@@ -447,6 +449,7 @@ ipcMain.on("RequestedShoeDetails",(event,arg) => {
 ipcMain.on("RequestedShoeDetailsArray",async (event,arg) => {
   var ArrRes = []
   var Res = ""
+  var k = 1
   var ObjTosend = {
     Message: "Synchronizing stockX prices",
     Section: "Inventory/Sale",
@@ -458,6 +461,8 @@ ipcMain.on("RequestedShoeDetailsArray",async (event,arg) => {
     await stockX.fetchProductDetails('https://stockx.com/' + SingleShoe.Url)
     .then(async product => {Res = await GetPrice(product,SingleShoe.Size); ArrRes.push({Id: SingleShoe.Id,Price: Res})})
     .catch(err => console.log(`Error scraping product details: ${err.message}`));
+    event.sender.send("NewSyncReceived",k)
+    k+=1
   }
   console.log("RES")
   console.log(ArrRes)
@@ -486,7 +491,7 @@ ipcMain.on("CreateLog",(event,arg) => {
     CreateLog(arg)
 })
 
-function CreateLog(ObjLog){
+function CreateLog(ObjLog){ 
   var FileContentLog = fs.readFileSync(path.join(DirectoryLog, "/LogMessage.json"), "utf8");
   var Json = JSON.parse(FileContentLog)
   console.log(Json)
@@ -498,7 +503,7 @@ function CreateLog(ObjLog){
 ipcMain.on("CheckConnection",(event,arg)=>{
   internetAvailable().then(function(){
     event.sender.send("CheckedConnection","Connected")
-    LastConnection = "Connected"
+    LastConnection = "Connected"  
   }).catch(function(){
     if(LastConnection == "Connected"){
       var ObjTosend = {
@@ -580,7 +585,7 @@ ipcMain.on("RequestedExportInventorySold",(event,arg) => {
         "Average StockX Price": results.prezzoMedioResell,
         "Notes": results.Note,
         "Date Sold": results.DataVendita,
-        "Price Sold": results.PrezzoVendita
+        "Price Sold": results.PrezzoVendita 
       }
       InventorySold.Inventory_Sold.push(SingleItem)
     }
@@ -596,7 +601,7 @@ ipcMain.on("RequestedExportInventorySold",(event,arg) => {
           "Size": results.Taglia,
           "Notes": results.Note,
           "Date Sold": results.DataVendita,
-          "Sold  Price": results.PrezzoVendita
+          "Sold  Price": results.PrezzoVendita 
         }
         InventoryCustomSold.Inventory_Custom_Sold.push(SingleItemCustom)
       }
@@ -924,5 +929,6 @@ ipcMain.on("StoreSavedMonthFilter",(event,arg)=>{
 })
 
 ipcMain.on("RequestedMonthFilter",(event,arg)=>{
+  console.log("Requested a new month filter from home.js")
   event.sender.send("ReturnedMonthFilter",FilterMonth)
 })
