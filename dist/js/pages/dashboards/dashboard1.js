@@ -1,18 +1,18 @@
-const connection = require("electron").remote.getGlobal("conn");
+const pool = require("electron").remote.getGlobal("pool");
 const path = require("path")
 const Util = require(path.join(__dirname,"/utilityScripts/query_graphs_expenses.js"))
 const moment = require("moment")
 var UserId = require('electron').remote.getGlobal('UserId')
 
-GetValutaAsUtf8(UserId)
+/*GetValutaAsUtf8(UserId)
 function GetValutaAsUtf8(Id){
     connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
         if(error)console.log(error)
         console.log(results[0].Valuta1)
-        Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
+        Valuta = Util.GetCurrencyFromUTF8(results[0].Valuta1)
         console.log(Valuta)
     })
-}
+}*/
 
 var CostsBotList = []
 var CostsCookGroupList = []
@@ -54,17 +54,20 @@ function Request(FilterDate){
 
 ipc.on("ReturnedId",async (event,arg) => {
     UserId = arg
-    connection.query("SELECT * FROM costi WHERE IdUtente = ? AND YEAR(DataCosto) <= ?",[UserId,GetNewDateYear()],  function (error, results, fields) {
-        if(error) console.log(error)
-        SplitArrays(results)
-        Util.SetTypes(results)
-        var Res = ""
-        if(Filter1 == "Year"){
-            Res = Util.YearExpenses(results)
-        }else{
-            Res = Util.MonthExpenses(results,Filter1)
-        }
-        CreateGraph(Res)
+    pool.getConnection(function(err,connection){
+        connection.query("SELECT * FROM costi WHERE IdUtente = ? AND YEAR(DataCosto) <= ?",[UserId,GetNewDateYear()],  function (error, results, fields) {
+            if(error) console.log(error)
+            SplitArrays(results)
+            Util.SetTypes(results)
+            var Res = ""
+            if(Filter1 == "Year"){
+                Res = Util.YearExpenses(results)
+            }else{
+                Res = Util.MonthExpenses(results,Filter1)
+            }
+            connection.release()
+            CreateGraph(Res)
+        })
     })
 })
 
