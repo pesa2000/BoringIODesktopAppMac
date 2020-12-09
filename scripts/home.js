@@ -2,10 +2,12 @@ var windowStats = require('electron').remote.getGlobal('windowStats')
 var https = require('https')
 var http = require('http')
 //const moment = require("moment")
-//const pool = require('electron').remote.getGlobal('pool')
+const pool = require('electron').remote.getGlobal('pool')
 console.log("All connections: " + pool._allConnections.length)
 console.log("Free connections: " + pool._freeConnections.length)
 console.log(pool)
+var path = require("path")
+const moment = require("moment")
 
 var UserId = require('electron').remote.getGlobal('UserId')
 console.log("Id Utente")
@@ -88,6 +90,8 @@ ipc.on("ReturnedMonthFilter",(event,arg)=>{
         flag = false
         if(arg == "Year"){
             $("#FilterDate").val("Year")
+        }else if(arg == "Lifetime"){
+            $("#FilterDate").val("Lifetime")
         }else{
             $("#FilterDate").val(parseInt(arg))
         }
@@ -99,20 +103,13 @@ ipc.on("ReturnedMonthFilter",(event,arg)=>{
 })
 
 async function Changed(){
-    //Done = false
     ipc.send("StoreSavedMonthFilter",$("#FilterDate").val())
     location.reload()
-    //LoadStats($("#FilterDate").val())
-    /*$("#Preloader1").show()
-    ipc.send("RequestedDataGraphs",{p1:$("#FilterDate").val(),p2:"FutureCalls"})
-    await sleep(1000)
-    $("#Preloader1").hide()*/
 }
 
 async function LoadStats(Filter){
     console.log("Funzione Load stats")
     GlobalFilter = Filter
-    //console.log(GlobalFilter)
     ChangeValues()
 }
 
@@ -120,7 +117,6 @@ function ChangeValues(){
     if(Done == false){
         pool.getConnection(function(err,connection){
             if(err)console.log(err)
-            //console.log("Sto cambiando i valori")
             Done = true
             var EntireInv
             var EntireInvCustom
@@ -129,8 +125,6 @@ function ChangeValues(){
             var TotSales = 0 
             var TotProfitTime = 0
             var TotProfitLifetime = 0
-            /*console.log("Filter nel change values")
-            console.log(GlobalFilter)*/
             if(GlobalFilter == "Year"){
                 Query1 = "SELECT * FROM inventario WHERE IdUtente = ? AND YEAR(ReleaseDate) = ?"
                 Values1 = [UserId,parseInt(GetNewDateYear())]
@@ -141,6 +135,16 @@ function ChangeValues(){
                 Values3 = [UserId,parseInt(GetNewDateYear())]
                 Query4 = "SELECT * FROM inventariocustom WHERE IdUtente = ? AND YEAR(DataVendita) = ?"
                 Values4 = [UserId,parseInt(GetNewDateYear())]
+            }else if(GlobalFilter == "Lifetime"){
+                Query1 = "SELECT * FROM inventario WHERE IdUtente = ?"
+                Values1 = [UserId]
+                Query2 = "SELECT * FROM inventariocustom WHERE IdUtente = ?"
+                Values2 = [UserId]
+
+                Query3 = "SELECT * FROM inventario WHERE IdUtente = ?"
+                Values3 = [UserId]
+                Query4 = "SELECT * FROM inventariocustom WHERE IdUtente = ?"
+                Values4 = [UserId]
             }else{
                 Query1 = "SELECT * FROM inventario WHERE IdUtente = ? AND YEAR(ReleaseDate) = ? AND MONTH(ReleaseDate) = ?"
                 Values1 = [UserId,parseInt(GetNewDateYear()),parseInt(GlobalFilter)]
@@ -159,7 +163,9 @@ function ChangeValues(){
                 if(error) console.log(error)
                 EntireInv = results
                 for(var Item of EntireInv){
-                    TotInventoryValue += Item.PrezzoMedioResell
+                    if(Item.QuantitaAttuale == 1){
+                        TotInventoryValue += Item.PrezzoMedioResell
+                    }
                     TotPurchases += Item.PrezzoProdotto
                     TotSales += Item.PrezzoVendita 
                 }
@@ -167,13 +173,12 @@ function ChangeValues(){
                     if(error)console.log(error)
                     EntireInvCustom = results
                     for(var ItemCustom of EntireInvCustom){
-                        //console.log(ItemCustom)
                         TotPurchases += ItemCustom.PrezzoProdotto
                         TotSales += ItemCustom.PrezzoVendita
                     }
-                    $("#InventoryValue").text(Valuta + "" +TotInventoryValue)
-                    $("#Purchases").text(Valuta + "" +TotPurchases)
-                    $("#Sales").text(Valuta + "" +TotSales)
+                    $("#InventoryValue").text(Valuta + "" +TotInventoryValue.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1."))
+                    $("#Purchases").text(Valuta + "" +TotPurchases.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1."))
+                    $("#Sales").text(Valuta + "" +TotSales.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1."))
                     connection.query(Query3,Values3,function(error,results1,fields){
                         if(error)console.log(error)
                         for(var Item of results1){
@@ -188,10 +193,7 @@ function ChangeValues(){
                                     TotProfitTime += Item.Profitto
                                 }
                             }
-                            /*console.log("Profitto totale")
-                            console.log(TotProfitTime)*/
-                            //GetExpensesToScale(GlobalFilter)
-                            $("#Profit").text("Profit: " +Valuta + "" + + TotProfitTime + " ")
+                            $("#Profit").text("Profit: " +Valuta + "" + TotProfitTime.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.") + " ")
                         })
                     })
                     connection.query(QueryLifetime,UserId,function(error,results,fields){
@@ -208,7 +210,7 @@ function ChangeValues(){
                                     TotProfitLifetime += Item.Profitto
                                 }
                             }
-                            $("#ProfitLifetime").text("" + Valuta + "" +TotProfitLifetime)
+                            $("#ProfitLifetime").text("" + Valuta + "" +TotProfitLifetime.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1."))
                             connection.release()
                         })
                     })
@@ -221,29 +223,21 @@ function ChangeValues(){
 function ChangeLog(){
     pool.getConnection(function(err,connection){
         if(err)console.log(err)
-        /*console.log("Cambio del change log")
-        console.log(UserId)*/
         connection.query("SELECT * FROM inventario WHERE IdUtente = ? ORDER BY DataAggiunta DESC LIMIT 2",UserId,function(error,results,fields){
             if(error)console.log(error)
-           // console.log(results)
             for(var i of results){
                 $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-primary text-dark","fa-list","text-primary",i.NomeProdotto,i.DataAggiunta,"Inventory"))
             }
-            //console.log(UserId)
             connection.query("SELECT * FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0 ORDER BY DataVendita DESC LIMIT 2",UserId,function(error,results,fields){
-                //console.log(results)
                 if(error)console.log(error)
                 for(var i of results){
                     $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-success text-dark","fa-tag","text-success",i.NomeProdotto,i.DataVendita,"Sales"))
                 }
-                //console.log(UserId)
                 connection.query("SELECT * FROM spedizioni WHERE IdUtente = ? ORDER BY DataAggiunta DESC LIMIT 2",UserId,function(error,results,fields){
-                    //console.log(results)
                     if(error)console.log(error)
                     for(var i of results){
                         $("#RecentActivities").append(CreateLogElement("avatar-name rounded-circle bg-soft-warning text-dark","fa-truck","text-warning",i.Corriere,i.DataAggiunta,"Sales"))
                     }
-                    //console.log(UserId)
                     connection.query("SELECT * FROM costi WHERE IdUtente = ? ORDER BY DataAggiunta DESC LIMIT 2",UserId,function(error,results,fields){
                         console.log(results)
                         if(error)console.log(error)
