@@ -919,7 +919,7 @@ ipcMain.on("RequestedDataGraphs", (event,arg) => {
           DATAGRAPHS.push({y: `Oct`, item1: TotMonth10})
           DATAGRAPHS.push({y: `Nov`, item1: TotMonth11})
           DATAGRAPHS.push({y: `Dec`, item1: TotMonth12})
-          event.sender.send("ReturnedDataGraphsMorris",DATAGRAPHS)
+          event.sender.send("ReturnedDataGraphsMorris",{DATAGRAPHS: DATAGRAPHS,FilterMonth: FilterMonth})
           connection.release()
         })
       })
@@ -944,10 +944,35 @@ ipcMain.on("RequestedDataGraphs", (event,arg) => {
           for(var i = 0; i < ArrayYears.length; i+=1){
             DATAGRAPHS.push({y: ArrayYears[i], item1: ArrayProfit[i]})
           }
-          event.sender.send("ReturnedDataGraphsMorris",DATAGRAPHS)
+          event.sender.send("ReturnedDataGraphsMorris",{DATAGRAPHS: DATAGRAPHS,FilterMonth: FilterMonth})
         })
       })
-    }else{
+    }else if(FilterMonth == "Return"){
+      connection.query("SELECT SUM(PrezzoVendita) as SUM, YEAR(DataVendita) as Anno FROM inventario WHERE IdUtente = ? AND QuantitaAttuale = 0 GROUP BY YEAR(DataVendita)",[GlobalIdUtente],  function (error, results1, fields) {
+        if(error) console.log(error)
+        connection.query("SELECT SUM(PrezzoVendita) as SUM, YEAR(DataVendita) as Anno FROM inventariocustom WHERE IdUtente = ? AND QuantitaAttuale = 0 GROUP BY YEAR(DataVendita)",[GlobalIdUtente], function(error,results2,fields){
+          if(error)console.log(error)
+          var Arr = FinalArray.concat(results1,results2)
+          console.log(Arr)
+          connection.release()
+          for(var FullYear of Arr){
+            if(!ArrayYears.includes(FullYear.Anno)){
+              ArrayYears.push(FullYear.Anno)
+            }
+            var Cont = ArrayYears.indexOf(FullYear.Anno)
+            ArrayProfit[Cont] += FullYear.SUM
+            console.log(Cont)
+            console.log(ArrayProfit)
+          }
+
+          for(var i = 0; i < ArrayYears.length; i+=1){
+            DATAGRAPHS.push({y: ArrayYears[i], item1: ArrayProfit[i]})
+          }
+          event.sender.send("ReturnedDataGraphsMorris",{DATAGRAPHS: DATAGRAPHS,FilterMonth: FilterMonth})
+        })
+      })
+    }
+    else{
       connection.query("SELECT NomeProdotto,PrezzoProdotto,DAY(DataVendita) as Giorno,Profitto FROM inventario WHERE IdUtente = ? AND YEAR(DataVendita) = ? AND MONTH(DataVendita) = ? AND QuantitaAttuale = 0 ORDER BY DataVendita ASC",[GlobalIdUtente,parseInt(GetNewDateYear()),FilterMonth],  function (error, results, fields) {
         if(error) console.log(error)
         ResetVar2()
@@ -964,7 +989,7 @@ ipcMain.on("RequestedDataGraphs", (event,arg) => {
           DATAGRAPHS.push({y: `Third Week`, item1: TotWeek3})
           DATAGRAPHS.push({y: `Fourth Week`, item1: TotWeek4})
           DATAGRAPHS.push({y: `Fifth Week`, item1: TotWeek5})
-          event.sender.send("ReturnedDataGraphsMorris",DATAGRAPHS)
+          event.sender.send("ReturnedDataGraphsMorris",{DATAGRAPHS: DATAGRAPHS,FilterMonth: FilterMonth})
           connection.release()
         })
       })
