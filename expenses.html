@@ -150,6 +150,26 @@
                   </a>
                 </li>
                 <li class="nav-item">
+                  <a class="nav-link" href="profiles.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-archive"></span>
+                      </span>
+                      <span class="nav-link-text">Profiles</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="release.html">
+                    <div class="d-flex align-items-center">
+                      <span class="nav-link-icon">
+                        <span class="fas fa-globe-europe"></span>
+                      </span>
+                      <span class="nav-link-text">Releases</span>
+                    </div>
+                  </a>
+                </li>
+                <li class="nav-item">
                   <a class="nav-link" href="tracking.html">
                     <div class="d-flex align-items-center">
                       <span class="nav-link-icon">
@@ -226,7 +246,7 @@
             <a style ="-webkit-app-region: no-drag;" class="navbar-brand mr-1 mr-sm-3" href="home.html">
               <div class="d-flex align-items-center">
                 <img src="img/logo-piccolo.png" alt="" width="40" />
-                <span class="text-sans-serif" style="color:#fafafa">boring</span>
+                <span class="text-sans-serif" style="color:#fafafa;margin-left: 5px;">boring</span>
               </div>
             </a>
             <ul class="navbar-nav navbar-nav-icons ml-auto flex-row align-items-center">
@@ -286,11 +306,6 @@
                   <span class="badge badge-soft-danger" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:3px" id="MessageError">Connection error...</span>
                 </h1>
                 <span style="float: right;margin-right: 1%;">                     
-                  <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #FF6584 !important;color: #fff;" type="button" data-toggle="modal" data-target="#stats" >
-                    <span data-toggle="tooltip" data-placement="top" title="See all statistics">
-                    <span class="fas fa-chart-bar" data-fa-transform="shrink-3 down-2"></span>
-                  </span>
-                </button>
                </span>
               </div>
             </div> <!-- / .row -->
@@ -455,12 +470,14 @@
                             <option  data-value="https://pbs.twimg.com/profile_images/1234470067938746368/EZ9nRMLH_400x400.jpg"  >Vanguard</option>
                             <option  data-value="https://pbs.twimg.com/profile_images/1240609001617981440/Hrcl6Rr1_400x400.jpg"  >MoonCook</option>
                             <option  data-value="https://pbs.twimg.com/profile_images/1217977202387701760/IjxRUPAx_400x400.jpg"  >HermesNotify</option>
+                            <option  data-value="https://pbs.twimg.com/profile_images/1252950696636358657/4G9n5Nho_400x400.jpg"  >Sneakycop</option>
+                            <option  data-value="https://pbs.twimg.com/profile_images/1309915300599672835/ivFrXHJN_400x400.jpg"  >HypeCook</option>
+                            <option  data-value="https://pbs.twimg.com/profile_images/1338230345196441600/cDDN9GN8_400x400.jpg"  >JupiterNotify</option>
                           </select>
                       </div>
                       <div class="form-group col-12"><label for="modal-auth-confirm-password">Write it if you dont find it</label>
                         <input type = "text" class="form-control" id = "CookGroupsTextBox">
                       </div>
-                      
                       <div class="form-group col-6"><label for="modal-auth-password">Price</label><input class="form-control" type="text" id ="PriceCookGroups" /></div>
                       <div class="form-group col-6"><label for="modal-auth-password">Date</label><input class="form-control datetimepicker" id="DateCookGroups" type="text" data-options='{"dateFormat":"d/m/Y"}' /></div>
                       <div class="form-group col-12"><label for="modal-auth-password">Type</label>
@@ -480,7 +497,6 @@
                             <option value="11">11 month</option>
                         </select>
                       </div>
-
                     </div>
                     <div class="form-group col-12"><label id = "errorCookGroupModal" style = "font-size: 15px;color:rgb(197, 69, 69); align-content: center;"></label></div>
                     <div class="form-group"><button class="btn btn-primary btn-block mt-3" onclick = "AddCookGroup()">Add</button></div>
@@ -616,6 +632,7 @@
                   <div class="form-group col-12"><label for="modal-auth-confirm-password">Bot</label>
                     <select class="form-control" id="BotsList">
                       <option selected >Select a Bot</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1252579140483588102/B7xqRatq_400x400.jpg"  >BoringIO</option>
                       <option  data-value="https://pbs.twimg.com/profile_images/1184203863269634048/P98ia02p_400x400.jpg"  >CyberSole</option>
                       <option  data-value="https://pbs.twimg.com/profile_images/1241542362121166852/0hQnV9lV_400x400.png"  >Kodai</option>
                       <option  data-value="https://pbs.twimg.com/profile_images/917391315746385920/cryapglx_400x400.jpg"  >Splashforce</option>
@@ -667,6 +684,7 @@
                       <option  data-value="https://pbs.twimg.com/profile_images/1273239771704410113/S-QtJ2DG_400x400.png"  >OpheliaAIO</option>
                       <option  data-value="https://pbs.twimg.com/profile_images/1283445337055789056/hnR0P8h4_400x400.jpg"  >PhoenixAIO</option>
                       <option  data-value="https://pbs.twimg.com/profile_images/1320348115933794309/XQQnUgM2_400x400.jpg"  >ImpactSolutions</option>
+                      <option  data-value="https://pbs.twimg.com/profile_images/1331295066065920000/jNDS99le.jpg"  >SwitfSole</option>
                     </select>
                   </div>
                   <div class="form-group col-12"><label for="modal-auth-confirm-password">Write it if you dont find it</label>

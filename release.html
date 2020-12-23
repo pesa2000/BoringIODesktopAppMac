@@ -1,37 +1,29 @@
 
 <!DOCTYPE html>
-<html class="navbar-vertical-collapsed" lang="en-US" dir="ltr">
-
+<html lang="en-US" dir="ltr">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- ===============================================-->
-    <!--    Document Title-->
-    <!-- ===============================================-->
-    <title>Activity</title>
-
-    <!-- ===============================================-->
-    
-    <!--    Favicons-->
-    <!-- ===============================================-->
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/illustrations/logo.ico">
-
-
-    <!-- ===============================================-->
-    <!--    Stylesheets-->
-    <!-- ===============================================-->
-    <script>window.$ = window.jQuery = require('jquery');</script>
+    <title>Releases</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/img/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicons/favicon-16x16.png">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicons/favicon.ico">
+    <link rel="manifest" href="assets/img/favicons/manifest.json">
+    <meta name="msapplication-TileImage" content="assets/img/favicons/mstile-150x150.png">
+    <meta name="theme-color" content="#ffffff">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700%7cPoppins:100,200,300,400,500,600,700,800,900&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/icons/mfglabs_iconset.css">
-    <!--<link rel="stylesheet" href="assets/css/fontawesome.min.css">-->
-    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/js/config.navbar-vertical.min.js"></script>
+    <script>window.$ = window.jQuery = require('jquery');</script>
+    <script src="assets/js/config.navbar-vertical.min.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
-    <link href="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet">
-    <link href="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/lightbox2/css/lightbox.min.css" rel="stylesheet">
-    <link href="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/fancybox/jquery.fancybox.min.css" rel="stylesheet">
-    <link href="assets/css/theme-dark.min.css" rel="stylesheet">
+    <link href="assets/lib/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet">
+    <link href="assets/lib/datatables-bs4/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="assets/lib/datatables.net-responsive-bs4/responsive.bootstrap4.css" rel="stylesheet">
+    <link href="assets/lib/leaflet/leaflet.css" rel="stylesheet">
+    <link href="assets/lib/leaflet.markercluster/MarkerCluster.css" rel="stylesheet">
+    <link href="assets/lib/leaflet.markercluster/MarkerCluster.Default.css" rel="stylesheet">
+    <link id = "stile" href="assets/css/theme-dark.min.css" rel="stylesheet">
     <script>
       const ipc = require('electron').ipcRenderer
       ipc.send("getUsername")
@@ -42,8 +34,33 @@
       })
     </script>
   </head>
-
-  <body onload="LoadLogs()">
+  <body>
+    <style>
+      .dot {
+        height: 10px;
+        width: 10px;
+        background-color: #F6635B;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0px;
+      }
+      .dot1 {
+        height: 10px;
+        width: 10px;
+        background-color: #FABF30;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: .3rem;
+      }
+      .dot2 {
+        height: 10px;
+        width: 10px;
+        background-color: #41C941;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: .3rem;
+      }
+    </style>
     <!-- ===============================================-->
     <!--    Main Content-->
     <!-- ===============================================-->
@@ -70,7 +87,7 @@
             <a class="navbar-brand" href="home.html">
               <div class="d-flex align-items-center py-3">
                 <img class="mr-2" src="img/logo-piccolo.png" alt="" width="40" />
-                <span class="text-sans-serif" style="color: #fafafa;">boring</span>
+                <span class="text-sans-serif" style="color: #fafafa">boring</span>
               </div>
             </a>
           </div>
@@ -273,30 +290,84 @@
               //navbarTopCombo.parentNode.removeChild(navbarTopCombo);
             }
           </script>
-                <div class="content">
-                  <div class="header-body">
-                    <div class="row align-items-end">
-                      <div class="col">    
-                        <!-- Title -->
-                        <h1 class="header-title" style="float: left;margin-left: 12px;">
-                          Activity
-                          <span class="badge badge-soft-danger" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:3px" id="MessageError">Connection error...</span>
-                        </h1>
-                        <span style="float: right;margin-right: 1%;">                     
-                          <button class="btn btn-falcon-default btn-sm mx-1" style="background-color: #6C63FF !important;color: #fff;" type="button" onclick="ClearLog()">
-                            <span  data-toggle="tooltip" data-placement="top" title="Clear logs file">
-                            <span class="fas fa-trash" data-fa-transform="shrink-3 down-2"></span>
-                          </span>
-                         </button>  
-                       </span>
-                      </div>
-                    </div> <!-- / .row -->
+        <div class="content">
+          <div class="header-body">
+            <div class="row align-items-end">
+              <div class="col">             
+                <!-- Title -->
+                <h1 class="header-title" style="float: left;margin-left: 17px;">
+                  Releases
+                  <span class="badge badge-soft-danger" style="display: none;float: right;font-size: 12px;margin-top: 7px;margin-left:3px" id="MessageError">Connection error...</span>
+                </h1>
+              </div>
+            </div> <!-- / .row -->
+          </div>
+          <div class="card mb-3 bg-200">
+            <div>
+              <div class="alert alert-primary" role="alert" style="display: none;" id="MessageSync">Synchronizing prices</div>
+              <div class="alert alert-danger" role="alert" style="display: none;" id="MessageError">Connection error...</div>
+            </div>
+            <div class="card mb-3">
+              <div class="card-body" style="background-color: #061325;border-radius: 4px;cursor: pointer;">
+                <div style='text-align:center;display: none;' id="AlertBot">
+                  <img height = "300px" src='https://i.ibb.co/kKmwkJW/superscene-69-box-removebg-preview.png' alt=''>
+                  <h3 style='margin-top: -40px;'>Oh no! It's empty</h3> <br>
+                  <p style='margin-top: -20px;'>Start to add something</p>
                   </div>
-                  <div class="card" id = "TableLogs">
-                    
+                <div class="row" id = "ReleasesList">
+
+                </div>
+              </div>
+              </div>
+            </div>
+
+        <div class="modal fade" id="raffles" tabindex="-1" role="dialog" aria-labelledby="authentication-modal-label" aria-hidden="true">
+          <div class="modal-dialog mt-6" role="document">
+            <div class="modal-content border-0">
+              <div class="modal-header px-5 text-white position-relative modal-shape-header">
+                <div class="position-relative z-index-1">
+                  <div>
+                    <h4 class="mb-0 text-white" id="authentication-modal-label">Raffles</h4>
+                    <p class="fs--1 mb-0">View raffles for this item</p>
+                  </div>
+                </div><button class="close text-white position-absolute t-0 r-0 mt-1 mr-1" data-dismiss="modal" aria-label="Close"><span class="font-weight-light" aria-hidden="true">&times;</span></button>
+              </div>
+              <div class="modal-body py-4 px-5">
+                <div>
+                  <div class="form-row">
+                    <div class="form-group col-12">
+                      <div class="media align-items-center position-relative" style='background-color: #132238;cursor: pointer;padding: 8px;border-radius: 4px;'>
+                        <img class="rounded border border-200" id="ImgRaffle" width="70" alt="" />
+                        <div class="media-body ml-3">
+                          <h6 class="mb-1 font-weight-semi-bold" id="NameRaffle"></h6>
+                          <p class="font-weight-semi-bold mb-0 text-500"><span class="badge badge-pill fs--2 badge-soft-success" id="DateRaffle"></span></p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group col-12" id="rafflesList">
+                      
+                    </div>
+                    </div>
                   </div>
                 </div>
-          </main><!-- ===============================================-->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+          <!--END-->
+          <footer>
+            <div class="row no-gutters justify-content-between fs--1 mt-4 mb-3">
+              <div class="col-12 col-sm-auto text-center">
+              </div>
+              <div class="col-12 col-sm-auto text-center">
+                <p class="mb-0 text-600"></p>
+              </div>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </main><!-- ===============================================-->
     <!--    End of Main Content-->
     <!-- ===============================================-->
 
@@ -313,29 +384,29 @@
     <!--    JavaScripts-->
     <!-- ===============================================-->
     <script>if (typeof module === 'object') 
-      {window.module = module; module = undefined;}</script>
-    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/js/jquery.min.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/js/popper.min.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/js/bootstrap.min.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/@fortawesome/all.min.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/stickyfilljs/stickyfill.min.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/sticky-kit/sticky-kit.min.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/is_js/is.min.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/lodash/lodash.min.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/perfect-scrollbar/perfect-scrollbar.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/shopify-draggable/draggable.bundle.legacy.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/lightbox2/js/lightbox.min.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/lib/fancybox/jquery.fancybox.min.js"></script>
-    <script src="https://prium.github.io/falcon/v2.7.2/dark/assets/js/theme.min.js"></script>
-    <script src="assets/lib/leaflet/leaflet.js"></script>
-    <script src="assets/lib/leaflet.markercluster/leaflet.markercluster.js"></script>
-    <script src="assets/lib/leaflet.tilelayer.colorfilter/leaflet-tilelayer-colorfilter.min.js"></script>
-    <script src="assets/js/theme.min.js"></script>
-    <script src="assets/lib/jquery-validation/jquery.validate.min.js"></script>
-    <script src="assets/lib/flatpickr/flatpickr.min.js"></script>
-    <script src="assets/lib/dropzone/dropzone.min.js"></script>
-    <script src="scripts/log.js"></script>
-    <script>if(window.module){module = window.module;}</script> 
+        {window.module = module; module = undefined;}</script>
+        <script src="assets/js/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>    <script src="assets/lib/@fortawesome/all.min.js"></script>
+        <script src="assets/lib/@fortawesome/all.min.js"></script>
+        <script src="assets/lib/stickyfilljs/stickyfill.min.js"></script>
+        <script src="assets/lib/sticky-kit/sticky-kit.min.js"></script>
+        <script src="assets/lib/is_js/is.min.js"></script>
+        <script src="assets/lib/lodash/lodash.min.js"></script>
+        <script src="assets/lib/perfect-scrollbar/perfect-scrollbar.js"></script>
+        <script src="assets/lib/echarts/echarts.min.js"></script>
+        <script src="assets/lib/chart.js/Chart.min.js"></script>
+        <script src="assets/lib/progressbar.js/progressbar.min.js"></script>
+        <script src="assets/lib/datatables/js/jquery.dataTables.min.js"></script>
+        <script src="assets/lib/datatables-bs4/dataTables.bootstrap4.min.js"></script>
+        <script src="assets/lib/datatables.net-responsive/dataTables.responsive.js"></script>
+        <script src="assets/lib/datatables.net-responsive-bs4/responsive.bootstrap4.js"></script>
+        <script src="assets/lib/leaflet/leaflet.js"></script>
+        <script src="assets/lib/leaflet.markercluster/leaflet.markercluster.js"></script>
+        <script src="assets/lib/leaflet.tilelayer.colorfilter/leaflet-tilelayer-colorfilter.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser-polyfill.min.js"></script>
+        <script src="assets/lib/flatpickr/flatpickr.min.js"></script>
+        <script src="assets/js/theme.min.js"></script>
+        <script src="scripts/release.js" defer></script>
+        <script>if(window.module){module = window.module;}</script> 
   </body>
-
 </html>
