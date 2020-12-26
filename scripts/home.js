@@ -18,6 +18,7 @@ var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion
 
 var Valuta = ""
 var flag = true
+var Conversion = 1
 
 GetValutaAsUtf8(UserId)
 function GetValutaAsUtf8(Id){
@@ -28,7 +29,17 @@ function GetValutaAsUtf8(Id){
             //console.log(results[0].Valuta1)
             Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
             connection.release()
-            //console.log(Valuta)
+            switch(Valuta){
+                case "$":
+                    Conversion = 1
+                break;
+                case "€":
+                    Conversion = 0.86
+                break;
+                case "£":
+                    Conversion = 0.78
+                break;
+            }
         })
     })
 }
@@ -61,13 +72,13 @@ function GetNewDateYear(){
     //console.log(d[2])
     return d[2]
 }
-  
+
 function GetNewDateMonth(){
     var m = moment(new Date()).format("DD[/]MM[/]YYYY").split("/")
     //console.log(m[1])
     return m[1]
 }
-  
+
 
 function GetDateRightFormat(DateToChange){
     return moment(DateToChange).format('MMMM do YYYY')
@@ -112,18 +123,18 @@ function ChangeValues(){
 }
 
 ipc.on("ReturnedStats",(event,arg1) => {
-    ipc.send("RequestedExpensesFetched",{Filter:GlobalFilter})
-    ipc.on("ReturnedExpensesFetched",(event,arg2) => {
-        console.log("Stats nuove")
-        console.log(arg1)
-        console.log(arg2)
-        var TotExpenses = parseInt(arg2.Res.Bot + arg2.Res.Cook + arg2.Res.Custom + arg2.Res.Proxy + arg2.Res.Ship)
-        $("#InventoryValue").text(Valuta + "" + arg1.Inv.toString())
-        $("#Purchases").text(Valuta + "" + arg1.Pur.toString())
-        $("#Profit").text("Profit " +Valuta + "" + GetFormattedNumber(arg1.Prof - TotExpenses).toString() + " ")
-        $("#Sales").text(Valuta + "" + arg1.Sal)
-        $("#Return").text(" " + Valuta + "" + arg1.Prof)
-    })
+    var Res = arg1
+    console.log(Res)
+    $("#InventoryValue").text(Valuta + "" + parseInt(Conversion * Res.InventoryValue).toString())
+    $("#InventoryValueNumber").text(Res.NumberOfItemsRetailResell + " items")
+    $("#InventoryRetail").text(Valuta + "" + parseInt(Res.InventoryRetail).toString())
+    $("#InventoryRetailNumber").text(Res.NumberOfItemsRetailResell + " items")
+    $("#Profit").text("Profit: " + Valuta + "" + parseInt(Res.Profit).toString())
+    $("#Purchases").text(Valuta + "" + parseInt(Res.Purchases).toString())
+    $("#PurchasesNumber").text(Res.NumberOfItemsPurchases + " items")
+    $("#Sales").text(Valuta + "" + parseInt(Res.InventorySales).toString())
+    $("#SalesNumber").text(Res.NumberOfItemsSold + " items")
+    $("#Return").text(Valuta + "" + parseInt(Res.Return).toString())
 })
 
 function GetFormattedNumber(Number){
@@ -131,7 +142,6 @@ function GetFormattedNumber(Number){
     N[0] = N[0].replace(/\B(?=(\d{3})+(?!\d))/g,".");
     return N[0]
 }
-  
 
 function ChangeLog(){
     pool.getConnection(function(err,connection){
@@ -170,8 +180,6 @@ function ChangeDate(DateToChange){
 }
 
 function CreateLogElement(Class1,Class2,Class3,Name,Date,Section){
-    /*console.log(ChangeDate(Date))
-    console.log(GetTodaysDate())*/
     var DateDiff = moment.duration(moment(GetTodaysDate()).diff(moment(ChangeDate(Date))))
 
     var DaysDiff = parseInt(DateDiff.asDays())
