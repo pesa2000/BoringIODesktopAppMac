@@ -12,8 +12,6 @@ const { isParameter } = require('typescript')
 const { parse } = require('path')
 
 var UserId = require('electron').remote.getGlobal('UserId')
-/*console.log("Id Utente")
-console.log(UserId)*/
 var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
 
 var Valuta = ""
@@ -72,13 +70,13 @@ function GetNewDateYear(){
     //console.log(d[2])
     return d[2]
 }
-
+  
 function GetNewDateMonth(){
     var m = moment(new Date()).format("DD[/]MM[/]YYYY").split("/")
     //console.log(m[1])
     return m[1]
 }
-
+  
 
 function GetDateRightFormat(DateToChange){
     return moment(DateToChange).format('MMMM do YYYY')
