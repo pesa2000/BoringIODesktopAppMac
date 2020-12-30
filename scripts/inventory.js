@@ -28,7 +28,7 @@ if(UserAttachedInventory != null){
 var Conversion = 1
 var Flag = false
 
-console.log("User attached") 
+console.log("User attached")
 console.log(UserAttachedInventory)
 
 GetValutaAsUtf8(UserId)
@@ -107,7 +107,7 @@ async function SwitchAlert(){
                 $("#MessageExport").css("display","inline-block")
                 await sleep(5000)
                 $("#MessageExport").css("display","none")
-                break;    
+                break;
         }
         ipc.send("ResetAlert")
     }
@@ -378,7 +378,7 @@ function SingleSavedShoe(Url,Img,Name,Price,Date,ActualCont){
         Date = GetTodaysDate()
     }
     return `<div class="col-md-6 col-lg-12" >` +
-    `<img class="card-img-top"/>`+ 
+    `<img class="card-img-top"/>`+
     `<div id='DivShoe${ActualCont}' class='card-body' style='background-color: #132238;border-radius: 4px;cursor: pointer;'>` +
     "<div class='row justify-content-between align-items-center'>" +
       "<div class='col'>" +
@@ -390,7 +390,7 @@ function SingleSavedShoe(Url,Img,Name,Price,Date,ActualCont){
             `<input type='hidden' id='UrlSingle${ActualCont}' value='${Url}'>` +
             `<input type='hidden' id='Value${ActualCont}'>` +
             `<input type='hidden' id='NameSingle${ActualCont}'>` +
-            "<h6 class='fs-0'>"+Name+" &nbsp&nbsp</h6>" + 
+            "<h6 class='fs-0'>"+Name+" &nbsp&nbsp</h6>" +
             "<br>" +
             "<span id='BadgeSize"+ActualCont +"' class='badge badge rounded-capsule badge-soft-success'>?</span>" +
             "&nbsp<span id='BadgeDate"+ActualCont +"' class='badge badge rounded-capsule badge-soft-warning'>"+Date+"</span>" +
@@ -404,9 +404,9 @@ function SingleSavedShoe(Url,Img,Name,Price,Date,ActualCont){
       `<button id='Remove${ActualCont}' onclick = 'RemoveSaved(${ActualCont})' class='btn btn-info btn-sm mr-2' style='background-color: #e63757 !important;color: #fff;border: none;' type='button'>Remove</button>` +
       `<button id='Save${ActualCont}' onclick= 'Save(${ActualCont})'class='btn btn-info btn-sm mr-2' style='background-color: #00d27a !important;color: #fff;border: none;' type='button'>Save</button>` +
       `<span id='Green${ActualCont}' style="color:#00d27a;" class="fas fa-check" data-fa-transform="shrink-3 down-2"></span>`+
-      `<span id='Red${ActualCont}' style="color:#e63757;" class="fas fa-exclamation" data-fa-transform="shrink-3 down-2"></span>`+  
+      `<span id='Red${ActualCont}' style="color:#e63757;" class="fas fa-exclamation" data-fa-transform="shrink-3 down-2"></span>`+
       "</div>" +
-      "<div class='form-row collapse' id='collapseSingleShoe"+ActualCont+"' style='padding-top: 20px'>" +                       
+      "<div class='form-row collapse' id='collapseSingleShoe"+ActualCont+"' style='padding-top: 20px'>" +
         "<div class='form-group col-3'>" +
           "<label for='modal-auth-password'>Size</label>" +
           "<select class='form-control' type='text' id = 'prodSize"+ActualCont+"' ></select>" +
@@ -416,16 +416,16 @@ function SingleSavedShoe(Url,Img,Name,Price,Date,ActualCont){
           "<input class='form-control datetimepicker' id='prodDate"+ActualCont+"' type='text' data-options='{'dateFormat':'d/m/Y'}' />" +
         "</div>" +
         "<div class='form-group col-3'>" +
-          "<label for='modal-auth-password'>Price</label>" + 
+          "<label for='modal-auth-password'>Price</label>" +
           "<input class='form-control' type='text' id = 'prodPrice"+ActualCont+"' />" +
         "</div>" +
-        "<div class='form-group col-3'>" + 
+        "<div class='form-group col-3'>" +
           "<label for='modal-auth-password'>Site</label>" +
           "<input class='form-control' type='text'  id = 'prodSite"+ActualCont+"'/>" +
-        "</div>" + 
-        "<div class='col-12' style = 'margin-left:5px;color:#e63757;' id='prodError"+ActualCont+"'>" + 
         "</div>" +
-      "</div>" +  
+        "<div class='col-12' style = 'margin-left:5px;color:#e63757;' id='prodError"+ActualCont+"'>" +
+        "</div>" +
+      "</div>" +
     "</div>" +
   "</div>" +
   "</div>"
@@ -471,14 +471,14 @@ function OpenEdit(Cont){
 
 function Save(Cont){
     if($("#prodPrice"+Cont).val() == ""){
-        $("#Red"+Cont).show() 
+        $("#Red"+Cont).show()
         $("#Green"+Cont).hide()
         console.log("Il prezzo è vuoto")
         ReadyToAdd[Cont] = false
         $("#prodError"+Cont).text("The field 'Price' cannot be empty")
     }else{
         if(isNaN($("#prodPrice"+Cont).val())){
-            $("#Red"+Cont).show() 
+            $("#Red"+Cont).show()
             $("#Green"+Cont).hide()
             console.log("Il prezzo non è un numero")
             ReadyToAdd[Cont] = false
@@ -512,8 +512,8 @@ function Save(Cont){
                     $("#prodError"+Cont).text("The field 'Date' need to be in the correct format (dd/mm/yyyy)")
                 }
             }
-        }  
-    }   
+        }
+    }
 }
 function CheckValidDate(Date){
     try{
@@ -549,16 +549,12 @@ var LoadShoesModal = function(SelectedUrl){
         $("#Save"+ContSaved).hide()
         var Price = SelectedProd[0].searchable_traits["Retail Price"]
         if(Price == undefined || Price == null || Price == "undefined"){
-            $("#prodPrice"+ContSaved).val(0)  
+            $("#prodPrice"+ContSaved).val(0)
         }else{
-            $("#prodPrice"+ContSaved).val(SelectedProd[0].searchable_traits["Retail Price"])  
+            $("#prodPrice"+ContSaved).val(SelectedProd[0].searchable_traits["Retail Price"])
         }
-
-        /*if(){
-            $("#prodDate"+ContSaved).val(FlipDate(SelectedProd[0].release_date))
-        }else{
-            $("#prodDate"+ContSaved).val(FlipDate(SelectedProd[0].release_date))
-        }*/
+        $("#prodDate"+ContSaved).val(FlipDate(SelectedProd[0].release_date))
+      
         $("#prodSite"+ContSaved).val("No site")
         $("#NameSingle"+ContSaved).val(SelectedProd[0].name)
         $("#Red"+ContSaved).hide()
@@ -629,7 +625,7 @@ function Populate(){
         for(var CustomObj of CustomList){
             var NewDate = FlipDateAndChange(CustomObj.ReleaseDate)
             var Custom = TemplateShoeCustom(CustomObj.IdProdotto,CustomObj.NomeProdotto,NewDate,CustomObj.Sito,CustomObj.PrezzoProdotto,CustomObj.Taglia,CustomObj.ImmagineProdotto)
-            $("#Inventory").append(Custom)    
+            $("#Inventory").append(Custom)
         }
         $("#Preloader1").css("display","none")
     }
@@ -642,7 +638,7 @@ function PopulateTable(){
     for(var Shoe of ShoesList){
         var NewDate = FlipDateAndChange(Shoe.ReleaseDate)
         var Shoe = TemplateShoe(Shoe.IdProdotto,Shoe.NomeProdotto,NewDate,Shoe.Sito,Shoe.PrezzoProdotto,Shoe.PrezzoMedioResell,Shoe.Taglia,Shoe.ImmagineProdotto,Shoe.UrlKey)
-        $("#Inventory").append(Shoe)    
+        $("#Inventory").append(Shoe)
     }
     //$("#Preloader1").css("display","none")
 }
@@ -650,7 +646,7 @@ function PopulateTableCustom(){
     for(var CustomObj of CustomList){
         var NewDate = FlipDateAndChange(CustomObj.ReleaseDate)
         var Custom = TemplateShoeCustom(CustomObj.IdProdotto,CustomObj.NomeProdotto,NewDate,CustomObj.Sito,CustomObj.PrezzoProdotto,CustomObj.Taglia,CustomObj.ImmagineProdotto)
-        $("#Inventory").append(Custom)    
+        $("#Inventory").append(Custom)
     }
     $("#Preloader1").css("display","none")
 }
@@ -929,7 +925,7 @@ async function EditPriceDeadStock(Id,Price){
         var Query = "UPDATE inventario SET PrezzoMedioResell = ? WHERE IdProdotto = ?"
         var Values = [Price,Id]
         pool.getConnection(async function(err,connection){
-            connection.query(Query,Values,function(error,fields,results){ 
+            connection.query(Query,Values,function(error,fields,results){
                 if(error) console.log(error)
                 connection.release()
                 console.log("UPDATED")
@@ -1020,7 +1016,7 @@ function DeleteCustom(Id){
 
 function DuplicateCustom(Id){
     for(var CustomSelected of CustomList){
-        if(CustomSelected.IdProdotto == Id){    
+        if(CustomSelected.IdProdotto == Id){
             console.log("trovato")
             var Query = "INSERT INTO inventariocustom (NomeProdotto,ReleaseDate,PrezzoProdotto,Taglia,QuantitaTotale,QuantitaAttuale,Sito,Compratore,ImmagineProdotto,PrezzoVendita,Profitto,Note,DataAggiunta,IdConto,IdUtente) values (?)"
             var Values = [

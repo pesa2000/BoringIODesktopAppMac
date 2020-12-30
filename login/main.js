@@ -326,7 +326,7 @@ async function createWindows() {
 
         }).catch(function (err) {
           console.warn('Something went wrong.', err);
-        });   
+        });
       }else{
         LOGGEDIN = false
         win = new BrowserWindow(
@@ -621,7 +621,7 @@ ipcMain.on("CreateLog",(event,arg) => {
   CreateLog(arg)
 })
 
-function CreateLog(ObjLog){ 
+function CreateLog(ObjLog){
   ObjLog.Message = Username + " " + ObjLog.Message
   var FileContentLog = fs.readFileSync(path.join(DirectoryLog, "/LogMessage.json"), "utf8");
   var Json = JSON.parse(FileContentLog)
@@ -633,7 +633,7 @@ function CreateLog(ObjLog){
 ipcMain.on("CheckConnection",(event,arg)=>{
   internetAvailable().then(function(){
     event.sender.send("CheckedConnection","Connected")
-    LastConnection = "Connected"  
+    LastConnection = "Connected"
   }).catch(function(){
     if(LastConnection == "Connected"){
       var ObjTosend = {
@@ -724,7 +724,7 @@ ipcMain.on("RequestedExportInventory",async (event,arg) => {
             }
             fs.writeFileSync(path.join(Path.filePath),Csv,() => {console.log("Writing new file")})
           }
-        })  
+        })
       })
     })
   }else{
@@ -755,8 +755,8 @@ ipcMain.on("RequestedExportInventorySold",async (event,arg) => {
                 var SingleItem = {
                   "Type":"StockX Item",
                   "Product Name":InventorySoldRes[i].NomeProdotto,
-                  "Purchase Price": InventorySoldRes[i].PrezzoProdotto, 
-                  "Sold Price": InventorySoldRes[i].PrezzoVendita, 
+                  "Purchase Price": InventorySoldRes[i].PrezzoProdotto,
+                  "Sold Price": InventorySoldRes[i].PrezzoVendita,
                   "Profit": InventorySoldRes[i].Profitto ,
                   "Value": InventorySoldRes[i].PrezzoMedioResell,
                   "Date Sold": InventorySoldRes[i].DataVendita,
@@ -771,8 +771,8 @@ ipcMain.on("RequestedExportInventorySold",async (event,arg) => {
                 var SingleItem = {
                   "Type":"Custom Item",
                   "Product Name":InventorySoldRes[i].NomeProdotto,
-                  "Purchase Price": InventorySoldRes[i].PrezzoProdotto, 
-                  "Sold Price": InventorySoldRes[i].PrezzoVendita, 
+                  "Purchase Price": InventorySoldRes[i].PrezzoProdotto,
+                  "Sold Price": InventorySoldRes[i].PrezzoVendita,
                   "Profit": InventorySoldRes[i].Profitto ,
                   "Date Sold": InventorySoldRes[i].DataVendita,
                   "Site": InventorySoldRes[i].Sito,
@@ -887,7 +887,7 @@ ipcMain.on("RequestedStats",async (event,arg) => {
     GlobalFilter = arg.Filter
     var Url = ""
     var ObjToSend = {
-      
+
     }
     if(GlobalFilter == "Year"){
       Url = "https://www.boringio.com:5666/GetHomepageStatsYearDesktop"
@@ -919,6 +919,7 @@ ipcMain.on("RequestedStats",async (event,arg) => {
     });
 
     var Res = await Response.json()
+    connection.release()
     event.sender.send("ReturnedStats",Res)
   })
 })
@@ -949,7 +950,7 @@ ipcMain.on("RequestedDataGraphs", async(event,arg) => {
     ArrayYears = []
     FinalArray = []
     ArrayMonth = [0,0,0,0,0,0,0,0,0,0,0,0]
-    
+
     if(FilterMonth == "Year"){
       ResetVarMonth()
       var Values = [GlobalIdUtente,GetNewDateYear()]
@@ -1177,7 +1178,7 @@ function SetWeekRicavi(Shoe){
       }else{
         TotWeek5 -= parseInt(Shoe.PrezzoVendita)
       }
-      break;  
+      break;
     default:
         console.log("Non entra nello switch")
       break;
@@ -1232,7 +1233,7 @@ function SetYearRicavi(Shoe){
   }else{
     ArrayYear[Shoe.Anno] -= Shoe.PrezzoVendita
   }
-} 
+}
 
 function ResetVarWeek(){
   TotWeek1 = 0
