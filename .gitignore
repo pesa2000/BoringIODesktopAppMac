@@ -2,3 +2,5 @@ node_modules
 builds/
 !dist/js
 copyMain.js
+.profile
+.profile.save
