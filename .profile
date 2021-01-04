@@ -1,1 +1,0 @@
-export GH_TOKEN=d3e3b3c064b6fff2f173f288a627a90e73bec3
