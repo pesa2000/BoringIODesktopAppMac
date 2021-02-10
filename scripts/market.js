@@ -1,11 +1,12 @@
 var moment = require('moment')
 const { idText } = require('typescript')
 var config = require('electron').remote.getGlobal('configuration')
-var connection = require('electron').remote.getGlobal('conn')
 var windowStats = require('electron').remote.getGlobal('windowStats')
+var JwtToken = require('electron').remote.getGlobal('JwtToken')
+var Currency = require('electron').remote.getGlobal('Valuta')
+var Conversion = require('electron').remote.getGlobal('Conversion')
 var https = require('https')
 var http = require('http')
-const pool = require('electron').remote.getGlobal('pool')
 
 var timer
 var GlobalIndex = 0
@@ -15,43 +16,6 @@ var GlobalProducts = []
 var GlobalProductsDetails = []
 
 var UserId = require('electron').remote.getGlobal('UserId')
-var Valuta = require('electron').remote.getGlobal('ValutaAcc')
-console.log("Valuta")
-console.log(Valuta)
-console.log("Id Utente")
-console.log(UserId)
-var UtilCurr =  require(path.join(__dirname,"/utilityScripts/currency-conversion.js"))
-
-var Conversion = " "
-var StringValuta = " "
-
-GetValutaAsUtf8(UserId)
-function GetValutaAsUtf8(Id){
-    pool.getConnection(function(err,connection){
-        if(err)console.log(err)
-        connection.query("SELECT CONVERT(Valuta USING utf8) as Valuta1 FROM utenti WHERE UserId = ?",Id,function(error,results,fileds){
-            if(error)console.log(error)
-            console.log(results[0].Valuta1)
-            Valuta = UtilCurr.GetCurrencyFromUTF8(results[0].Valuta1)
-            Currency = Valuta
-            switch(Valuta){
-                case "$":
-                    StringValuta = "USD"
-                break;
-                case "€":
-                    StringValuta = "EUR"
-                break;
-                case "£":
-                    StringValuta = "GBP"
-                break;
-            }
-            connection.query("SELECT Conversione FROM valute WHERE CodiceValuta = ?",StringValuta,function(err,results,fields){
-                connection.release()
-                Conversion = results[0].Conversione
-            })
-        })
-    })
-}
 
 window.setInterval(CheckConnection,5000)
 
@@ -68,7 +32,6 @@ function quit(){
 function FlipDateAndChange(DateToChange){
     return moment(DateToChange).format('DD[/]MM[/]YYYY')
 }
-
 
 function SelectedShoesNr(Index){
     var SelectedShoes = GlobalProducts[Index]
@@ -103,7 +66,7 @@ ipc.on("ReturnedProductDetails", async(event,arg) => {
 })
 function CreateTemplateVariant(Variant){
     return "<div class='mb-4 col-md-6 col-lg-4'>" +
-            "<div class='card-body' style='background-color: #132238;border-radius: 4px;cursor: pointer;'>" +
+            "<div class='card-body' style='background-color: #0A0A50;border-radius: 4px;cursor: pointer;'>" +
                 "<div class='row justify-content-between align-items-center'>" +
                 "<div class='col'>" +
                 "<div class='media'>" +

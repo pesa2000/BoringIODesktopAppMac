@@ -2,8 +2,6 @@ var mysql = require("mysql");
 var moment = require("moment");
 const fs = require("fs");
 const path = require("path");
-var config = require("electron").remote.getGlobal("configuration");
-var connection = require("electron").remote.getGlobal("conn");
 const app = require("electron").remote.app
 
 var LogDirectory = app.getPath("userData")
@@ -26,14 +24,6 @@ window.setInterval(CheckConnection,5000)
 function LoadLogs(){
     var FileContentLog = fs.readFileSync(path.join(LogDirectory, "/LogMessage.json"), "utf8");
     LogFile = JSON.parse(FileContentLog)
-    /*document.getElementById("TableLogs").innerHTML = `<div class="row no-gutters rounded-soft px-card py-2 mt-2 mb-3">` +
-    `<div class="col d-flex align-items-center">` +
-    `<h5 class="mb-0"></h5>` +
-    "</div>" +
-    `<div class="col-auto d-flex">`+
-    `<button class="btn btn-sm btn-falcon-default mr-2 d-none d-md-block" onclick="ClearLog()"><span class="fas fa-chart-bar mr-2"></span>Clear Logs</button>` +
-    "</div>" +
-  "</div>"*/
     LogFile.Logs.reverse()
     for(var Log of LogFile.Logs){
         console.log(Log)
@@ -74,8 +64,8 @@ function CreateSingleLog(Description,Action,Section,Date){
       break;
   }
 
-  return "<div class='card-body fs--1 p-0'>" +
-      "<a class='border-bottom-0 notification rounded-0 border-x-0 border border-300'>" +
+  return "<div class='card-body fs--1 p-0' style='background-color: #0A0A50 !important;'>" +
+      "<a class='border-bottom-0 notification rounded-0 border-x-0 border border-300' style='background-color: #0A0A50 !important'>" +
         "<div class='notification-avatar'>" +
           "<div class='avatar avatar-xl mr-3'>"+
             "<div class='avatar-emoji rounded-circle '><span role='img' aria-label='Emoji'>"+icon+"</span></div>" +
