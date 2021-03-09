@@ -1,6 +1,6 @@
 {
   "name": "BoringIO",
-  "version": "v1.4.1",
+  "version": "v1.4.3",
   "description": "Official BoringIO Desktop application",
   "main": "login/main.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "build": {
     "afterSign": "scripts/notarize.js",
     "appId": "org.electron.Pesa2000",
-    "buildVersion": "1.4.1",
+    "buildVersion": "1.4.3",
     "productName": "BoringIO",
     "directories": {
       "output": "builds"
